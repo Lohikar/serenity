@@ -61,7 +61,7 @@ use super::{HttpError, Request};
 /// Refer to [`offset`].
 ///
 /// [`offset`]: fn.offset.html
-static mut OFFSET: Option<i64> = None;
+static mut OFFSET: Option<i64> = Some(0);
 
 lazy_static! {
     /// The global mutex is a mutex unlocked and then immediately re-locked
@@ -151,9 +151,9 @@ pub(super) fn perform(req: Request) -> Result<Response> {
         //
         // This should probably only be a one-time check, although we may want
         // to choose to check this often in the future.
-        if unsafe { OFFSET }.is_none() {
-            calculate_offset(response.headers.get_raw("date"));
-        }
+        // if unsafe { OFFSET }.is_none() {
+        //     calculate_offset(response.headers.get_raw("date"));
+        // }
 
         // Check if the request got ratelimited by checking for status 429,
         // and if so, sleep for the value of the header 'retry-after' -
@@ -240,7 +240,7 @@ impl RateLimit {
         let diff = (self.reset - current_time) as u64;
 
         if self.remaining == 0 {
-            let delay = (diff * 1000) + 500;
+            let delay = (diff * 100) + 50;
 
             debug!(
                 "Pre-emptive ratelimit on route {:?} for {:?}ms",
