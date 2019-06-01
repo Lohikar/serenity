@@ -94,7 +94,7 @@ pub enum ShardClientMessage {
 /// A message for a [`ShardManager`] relating to an operation with a shard.
 ///
 /// [`ShardManager`]: struct.ShardManager.html
-#[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ShardManagerMessage {
     /// Indicator that a [`ShardManagerMonitor`] should restart a shard.
     ///
@@ -140,7 +140,7 @@ pub enum ShardQueuerMessage {
 
 /// A light tuplestruct wrapper around a u64 to verify type correctness when
 /// working with the IDs of shards.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ShardId(pub u64);
 
 impl Display for ShardId {

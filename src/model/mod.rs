@@ -45,7 +45,7 @@ use parking_lot::RwLock;
 use self::utils::*;
 use serde::de::Visitor;
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     fmt::{
         Display,
         Formatter,

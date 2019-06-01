@@ -225,7 +225,7 @@ impl<'de> Deserialize<'de> for Game {
 
 
 /// The type of activity that is being performed when playing a game.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum GameType {
     /// An indicator that the user is playing a game.
     Playing = 0,
@@ -376,9 +376,9 @@ impl Serialize for Presence {
 pub struct Ready {
     pub guilds: Vec<GuildStatus>,
     #[serde(default, deserialize_with = "deserialize_presences")]
-    pub presences: HashMap<UserId, Presence>,
+    pub presences: BTreeMap<UserId, Presence>,
     #[serde(default, deserialize_with = "deserialize_private_channels")]
-    pub private_channels: HashMap<ChannelId, Channel>,
+    pub private_channels: BTreeMap<ChannelId, Channel>,
     pub session_id: String,
     pub shard: Option<[u64; 2]>,
     #[serde(default, rename = "_trace")]

@@ -3,8 +3,7 @@ use serde::de::Error as DeError;
 use serde::de::MapAccess;
 use serde::ser::{SerializeSeq, Serialize, Serializer};
 use std::{
-    collections::HashMap,
-    hash::Hash,
+    collections::BTreeMap,
     sync::Arc
 };
 use super::prelude::*;
@@ -23,9 +22,9 @@ pub fn default_true() -> bool {
 
 pub fn deserialize_emojis<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<EmojiId, Emoji>, D::Error> {
+    -> StdResult<BTreeMap<EmojiId, Emoji>, D::Error> {
     let vec: Vec<Emoji> = Deserialize::deserialize(deserializer)?;
-    let mut emojis = HashMap::new();
+    let mut emojis = BTreeMap::new();
 
     for emoji in vec {
         emojis.insert(emoji.id, emoji);
@@ -36,9 +35,9 @@ pub fn deserialize_emojis<'de, D: Deserializer<'de>>(
 
 pub fn deserialize_guild_channels<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<ChannelId, Arc<RwLock<GuildChannel>>>, D::Error> {
+    -> StdResult<BTreeMap<ChannelId, Arc<RwLock<GuildChannel>>>, D::Error> {
     let vec: Vec<GuildChannel> = Deserialize::deserialize(deserializer)?;
-    let mut map = HashMap::new();
+    let mut map = BTreeMap::new();
 
     for channel in vec {
         map.insert(channel.id, Arc::new(RwLock::new(channel)));
@@ -49,9 +48,9 @@ pub fn deserialize_guild_channels<'de, D: Deserializer<'de>>(
 
 pub fn deserialize_members<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<UserId, Member>, D::Error> {
+    -> StdResult<BTreeMap<UserId, Member>, D::Error> {
     let vec: Vec<Member> = Deserialize::deserialize(deserializer)?;
-    let mut members = HashMap::new();
+    let mut members = BTreeMap::new();
 
     for member in vec {
         let user_id = member.user.read().id;
@@ -64,9 +63,9 @@ pub fn deserialize_members<'de, D: Deserializer<'de>>(
 
 pub fn deserialize_presences<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<UserId, Presence>, D::Error> {
+    -> StdResult<BTreeMap<UserId, Presence>, D::Error> {
     let vec: Vec<Presence> = Deserialize::deserialize(deserializer)?;
-    let mut presences = HashMap::new();
+    let mut presences = BTreeMap::new();
 
     for presence in vec {
         presences.insert(presence.user_id, presence);
@@ -77,9 +76,9 @@ pub fn deserialize_presences<'de, D: Deserializer<'de>>(
 
 pub fn deserialize_private_channels<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<ChannelId, Channel>, D::Error> {
+    -> StdResult<BTreeMap<ChannelId, Channel>, D::Error> {
     let vec: Vec<Channel> = Deserialize::deserialize(deserializer)?;
-    let mut private_channels = HashMap::new();
+    let mut private_channels = BTreeMap::new();
 
     for private_channel in vec {
         let id = match private_channel {
@@ -97,9 +96,9 @@ pub fn deserialize_private_channels<'de, D: Deserializer<'de>>(
 
 pub fn deserialize_roles<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<RoleId, Role>, D::Error> {
+    -> StdResult<BTreeMap<RoleId, Role>, D::Error> {
     let vec: Vec<Role> = Deserialize::deserialize(deserializer)?;
-    let mut roles = HashMap::new();
+    let mut roles = BTreeMap::new();
 
     for role in vec {
         roles.insert(role.id, role);
@@ -135,9 +134,9 @@ pub fn serialize_sync_user<S: Serializer>(
 
 pub fn deserialize_users<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<UserId, Arc<RwLock<User>>>, D::Error> {
+    -> StdResult<BTreeMap<UserId, Arc<RwLock<User>>>, D::Error> {
     let vec: Vec<User> = Deserialize::deserialize(deserializer)?;
-    let mut users = HashMap::new();
+    let mut users = BTreeMap::new();
 
     for user in vec {
         users.insert(user.id, Arc::new(RwLock::new(user)));
@@ -147,7 +146,7 @@ pub fn deserialize_users<'de, D: Deserializer<'de>>(
 }
 
 pub fn serialize_users<S: Serializer>(
-    users: &HashMap<UserId, Arc<RwLock<User>>>,
+    users: &BTreeMap<UserId, Arc<RwLock<User>>>,
     serializer: S
 ) -> StdResult<S::Ok, S::Error> {
     let mut seq = serializer.serialize_seq(Some(users.len()))?;
@@ -169,9 +168,9 @@ pub fn deserialize_u64<'de, D: Deserializer<'de>>(deserializer: D) -> StdResult<
 
 pub fn deserialize_voice_states<'de, D: Deserializer<'de>>(
     deserializer: D)
-    -> StdResult<HashMap<UserId, VoiceState>, D::Error> {
+    -> StdResult<BTreeMap<UserId, VoiceState>, D::Error> {
     let vec: Vec<VoiceState> = Deserialize::deserialize(deserializer)?;
-    let mut voice_states = HashMap::new();
+    let mut voice_states = BTreeMap::new();
 
     for voice_state in vec {
         voice_states.insert(voice_state.user_id, voice_state);
@@ -180,8 +179,8 @@ pub fn deserialize_voice_states<'de, D: Deserializer<'de>>(
     Ok(voice_states)
 }
 
-pub fn serialize_gen_map<K: Eq + Hash, S: Serializer, V: Serialize>(
-    map: &HashMap<K, V>,
+pub fn serialize_gen_map<K: Eq + Ord, S: Serializer, V: Serialize>(
+    map: &BTreeMap<K, V>,
     serializer: S,
 ) -> StdResult<S::Ok, S::Error> {
     let mut seq = serializer.serialize_seq(Some(map.len()))?;
@@ -193,8 +192,8 @@ pub fn serialize_gen_map<K: Eq + Hash, S: Serializer, V: Serialize>(
     seq.end()
 }
 
-pub fn serialize_gen_locked_map<K: Eq + Hash, S: Serializer, V: Serialize>(
-    map: &HashMap<K, Arc<RwLock<V>>>,
+pub fn serialize_gen_locked_map<K: Eq + Ord, S: Serializer, V: Serialize>(
+    map: &BTreeMap<K, Arc<RwLock<V>>>,
     serializer: S,
 ) -> StdResult<S::Ok, S::Error> {
     let mut seq = serializer.serialize_seq(Some(map.len()))?;
@@ -281,26 +280,26 @@ macro_rules! num_visitors {
                     struct Id {
                         num: $type,
                     }
-                    
+
                     struct StrVisitor;
-                    
+
                     impl<'de> Visitor<'de> for StrVisitor {
                         type Value = $type;
-                        
+
                         fn expecting(&self, formatter: &mut Formatter<'_>) -> FmtResult {
                             formatter.write_str("string")
                         }
-                        
+
                         fn visit_str<E: DeError>(self, s: &str) -> StdResult<Self::Value, E> { s.parse().map_err(E::custom) }
                         fn visit_string<E: DeError>(self, s: String) -> StdResult<Self::Value, E> { s.parse().map_err(E::custom) }
                     }
-                    
+
                     impl<'de> Deserialize<'de> for Id {
                         fn deserialize<D: Deserializer<'de>>(des: D) -> StdResult<Self, D::Error> {
                             Ok(Id { num: des.deserialize_str(StrVisitor)? })
                         }
                     }
-                    
+
                     map.next_value::<Id>().map(|id| id.num)
                 }
             }

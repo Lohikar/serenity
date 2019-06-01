@@ -271,7 +271,7 @@ impl CurrentUser {
 /// The has of the avatar can be retrieved via calling [`name`] on the enum.
 ///
 /// [`name`]: #method.name
-#[derive(Copy, Clone, Debug, Deserialize, Hash, Eq, PartialEq, PartialOrd, Ord, Serialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Eq, PartialEq, PartialOrd, Ord, Serialize)]
 pub enum DefaultAvatar {
     /// The avatar when the result is `0`.
     #[serde(rename = "6debd47ed13483642cf09e832ed0bc1b")]
@@ -304,7 +304,7 @@ impl DefaultAvatar {
 ///
 /// [`DoNotDisturb`]: #variant.DoNotDisturb
 /// [`Invisible`]: #variant.Invisible
-#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, PartialOrd, Ord, Serialize)]
 pub enum OnlineStatus {
     #[serde(rename = "dnd")] DoNotDisturb,
     #[serde(rename = "idle")] Idle,
@@ -352,8 +352,6 @@ pub struct User {
     pub name: String,
 }
 
-use std::hash::{Hash, Hasher};
-
 impl PartialEq for User {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
@@ -361,12 +359,6 @@ impl PartialEq for User {
 }
 
 impl Eq for User {}
-
-impl Hash for User {
-    fn hash<H: Hasher>(&self, hasher: &mut H) {
-        self.id.hash(hasher);
-    }
-}
 
 #[cfg(feature = "model")]
 impl User {

@@ -26,10 +26,9 @@ use model::{
     },
 };
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     ffi::OsStr,
     fs::File,
-    hash::{BuildHasher, Hash},
     io::Read,
     path::Path,
     str::FromStr,
@@ -40,9 +39,9 @@ use cache::Cache;
 #[cfg(feature = "cache")]
 use CACHE;
 
-/// Converts a HashMap into a final `serde_json::Map` representation.
-pub fn hashmap_to_json_map<H, T>(map: HashMap<T, Value, H>)
-    -> Map<String, Value> where H: BuildHasher, T: Eq + Hash + ToString {
+/// Converts a BTreeMap into a final `serde_json::Map` representation.
+pub fn btreemap_to_json_map<T>(map: BTreeMap<T, Value>)
+    -> Map<String, Value> where T: Eq + ToString {
     let mut json_map = Map::new();
 
     for (key, value) in map {
@@ -921,7 +920,7 @@ mod test {
         };
         use chrono::DateTime;
         use std::{
-            collections::HashMap,
+            collections::BTreeMap,
             sync::Arc,
         };
 
@@ -937,9 +936,9 @@ mod test {
             afk_channel_id: None,
             afk_timeout: 0,
             application_id: None,
-            channels: HashMap::new(),
+            channels: BTreeMap::new(),
             default_message_notifications: DefaultMessageNotificationLevel::All,
-            emojis: HashMap::new(),
+            emojis: BTreeMap::new(),
             explicit_content_filter: ExplicitContentFilter::None,
             features: Vec::new(),
             icon: None,
@@ -949,17 +948,17 @@ mod test {
                 "%Y %b %d %H:%M:%S%.3f %z").unwrap(),
             large: false,
             member_count: 1,
-            members: HashMap::new(),
+            members: BTreeMap::new(),
             mfa_level: MfaLevel::None,
             name: "serenity".to_string(),
             owner_id: UserId(114941315417899012),
-            presences: HashMap::new(),
+            presences: BTreeMap::new(),
             region: "Ferris Island".to_string(),
-            roles: HashMap::new(),
+            roles: BTreeMap::new(),
             splash: None,
             system_channel_id: None,
             verification_level: VerificationLevel::None,
-            voice_states: HashMap::new(),
+            voice_states: BTreeMap::new(),
         };
 
         let member = Member {

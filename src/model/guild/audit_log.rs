@@ -9,7 +9,7 @@ use serde::de::{
 use serde::ser::Serializer;
 use super::super::prelude::*;
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     mem::transmute,
     fmt
 };
@@ -201,7 +201,7 @@ pub struct Change {
 
 #[derive(Debug)]
 pub struct AuditLogs {
-    pub entries: HashMap<AuditLogEntryId, AuditLogEntry>,
+    pub entries: BTreeMap<AuditLogEntryId, AuditLogEntry>,
     pub webhooks: Vec<Webhook>,
     pub users: Vec<User>,
 }

@@ -36,7 +36,7 @@ use std;
 use std::borrow::Cow;
 
 /// A representation of a banning of a user.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Ban {
     /// The reason given for this ban.
     pub reason: Option<String>,
@@ -59,13 +59,13 @@ pub struct Guild {
     /// This contains all channels regardless of permissions (i.e. the ability
     /// of the bot to read from or connect to them).
     #[serde(serialize_with = "serialize_gen_locked_map")]
-    pub channels: HashMap<ChannelId, Arc<RwLock<GuildChannel>>>,
+    pub channels: BTreeMap<ChannelId, Arc<RwLock<GuildChannel>>>,
     /// Indicator of whether notifications for all messages are enabled by
     /// default in the guild.
     pub default_message_notifications: DefaultMessageNotificationLevel,
     /// All of the guild's custom emojis.
     #[serde(serialize_with = "serialize_gen_map")]
-    pub emojis: HashMap<EmojiId, Emoji>,
+    pub emojis: BTreeMap<EmojiId, Emoji>,
     /// Default explicit content filter level.
     pub explicit_content_filter: ExplicitContentFilter,
     /// VIP features enabled for the guild. Can be obtained through the
@@ -104,7 +104,7 @@ pub struct Guild {
     /// [`ReadyEvent`]: ../event/struct.ReadyEvent.html
     /// [`member_count`]: #structfield.member_count
     #[serde(serialize_with = "serialize_gen_map")]
-    pub members: HashMap<UserId, Member>,
+    pub members: BTreeMap<UserId, Member>,
     /// Indicator of whether the guild requires multi-factor authentication for
     /// [`Role`]s or [`User`]s with moderation permissions.
     ///
@@ -121,12 +121,12 @@ pub struct Guild {
     ///
     /// [`User`]: ../user/struct.User.html
     #[serde(serialize_with = "serialize_gen_map")]
-    pub presences: HashMap<UserId, Presence>,
+    pub presences: BTreeMap<UserId, Presence>,
     /// The region that the voice servers that the guild uses are located in.
     pub region: String,
     /// A mapping of the guild's roles.
     #[serde(serialize_with = "serialize_gen_map")]
-    pub roles: HashMap<RoleId, Role>,
+    pub roles: BTreeMap<RoleId, Role>,
     /// An identifying hash of the guild's splash icon.
     ///
     /// If the [`"InviteSplash"`] feature is enabled, this can be used to generate
@@ -140,7 +140,7 @@ pub struct Guild {
     ///
     /// [`User`]: ../user/struct.User.html
     #[serde(serialize_with = "serialize_gen_map")]
-    pub voice_states: HashMap<UserId, VoiceState>,
+    pub voice_states: BTreeMap<UserId, VoiceState>,
 }
 
 #[cfg(feature = "model")]
@@ -287,7 +287,7 @@ impl Guild {
     ///
     /// [`Guild`]: struct.Guild.html
     #[inline]
-    pub fn channels(&self) -> Result<HashMap<ChannelId, GuildChannel>> { self.id.channels() }
+    pub fn channels(&self) -> Result<BTreeMap<ChannelId, GuildChannel>> { self.id.channels() }
 
     /// Creates a guild with the data provided.
     ///
@@ -1852,7 +1852,7 @@ impl GuildStatus {
 }
 
 /// Default message notification level for a guild.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum DefaultMessageNotificationLevel {
     /// Receive notifications for everything.
     All = 0,
@@ -1877,7 +1877,7 @@ impl DefaultMessageNotificationLevel {
 }
 
 /// Setting used to filter explicit messages from members.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ExplicitContentFilter {
     /// Don't scan any messages.
     None = 0,
@@ -1906,7 +1906,7 @@ impl ExplicitContentFilter {
 }
 
 /// Multi-Factor Authentication level for guild moderators.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum MfaLevel {
     /// MFA is disabled.
     None = 0,
@@ -1931,7 +1931,7 @@ impl MfaLevel {
 }
 
 /// The name of a region that a voice server can be located in.
-#[derive(Copy, Clone, Debug, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord, Serialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Eq, PartialEq, PartialOrd, Ord, Serialize)]
 pub enum Region {
     #[serde(rename = "amsterdam")] Amsterdam,
     #[serde(rename = "brazil")] Brazil,
@@ -1982,7 +1982,7 @@ impl Region {
     messages in a [`Guild`].
 
     [`Guild`]: struct.Guild.html"]
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum VerificationLevel {
     /// Does not require any verification.
     None = 0,
@@ -2059,16 +2059,16 @@ mod test {
             let u = gen_user();
             let m = gen_member();
 
-            let hm1 = HashMap::new();
-            let hm2 = HashMap::new();
+            let hm1 = BTreeMap::new();
+            let hm2 = BTreeMap::new();
             let vec1 = Vec::new();
             let dt: DateTime<FixedOffset> = FixedOffset::east(5 * 3600)
                 .ymd(2016, 11, 08)
                 .and_hms(0, 0, 0);
-            let mut hm3 = HashMap::new();
-            let hm4 = HashMap::new();
-            let hm5 = HashMap::new();
-            let hm6 = HashMap::new();
+            let mut hm3 = BTreeMap::new();
+            let hm4 = BTreeMap::new();
+            let hm5 = BTreeMap::new();
+            let hm6 = BTreeMap::new();
 
             hm3.insert(u.id, m);
 

@@ -655,7 +655,7 @@ pub struct MessageReaction {
 }
 
 /// Differentiates between regular and different types of system messages.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum MessageType {
     /// A regular message.
     Regular = 0,

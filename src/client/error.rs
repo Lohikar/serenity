@@ -17,7 +17,7 @@ use std::{
 /// [`Error::Client`]: ../enum.Error.html#variant.Client
 /// [`GuildId::ban`]: ../model/id/struct.GuildId.html#method.ban
 #[allow(enum_variant_names)]
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     /// When the token provided is invalid. This is returned when validating a
     /// token through the [`validate_token`] function.

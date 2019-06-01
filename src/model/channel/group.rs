@@ -39,7 +39,7 @@ pub struct Group {
     /// A map of the group's recipients.
     #[serde(deserialize_with = "deserialize_users",
             serialize_with = "serialize_users")]
-    pub recipients: HashMap<UserId, Arc<RwLock<User>>>,
+    pub recipients: BTreeMap<UserId, Arc<RwLock<User>>>,
 }
 
 #[cfg(feature = "model")]

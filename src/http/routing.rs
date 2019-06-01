@@ -9,7 +9,7 @@ use super::LightMethod;
 /// in the [`http`] module.
 ///
 /// [`http`]: ../index.html
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum Route {
     /// Route for the `/channels/:channel_id` path.
     ///

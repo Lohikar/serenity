@@ -27,7 +27,7 @@ use parking_lot::Mutex;
 use serde::Deserialize;
 use sodiumoxide::crypto::secretbox::{self, Key, Nonce};
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     io::Write,
     net::{SocketAddr, ToSocketAddrs, UdpSocket},
     sync::{
@@ -81,7 +81,7 @@ struct ThreadItems {
 pub struct Connection {
     audio_timer: Timer,
     client: Arc<Mutex<Client>>,
-    decoder_map: HashMap<(u32, Channels), OpusDecoder>,
+    decoder_map: BTreeMap<(u32, Channels), OpusDecoder>,
     destination: SocketAddr,
     encoder: OpusEncoder,
     encoder_stereo: bool,
@@ -192,7 +192,7 @@ impl Connection {
         Ok(Connection {
             audio_timer: Timer::new(1000 * 60 * 4),
             client: mutexed_client,
-            decoder_map: HashMap::new(),
+            decoder_map: BTreeMap::new(),
             destination,
             encoder,
             encoder_stereo: false,

@@ -87,8 +87,8 @@ impl GuildId {
     /// Gets all of the guild's channels over the REST API.
     ///
     /// [`Guild`]: ../guild/struct.Guild.html
-    pub fn channels(&self) -> Result<HashMap<ChannelId, GuildChannel>> {
-        let mut channels = HashMap::new();
+    pub fn channels(&self) -> Result<BTreeMap<ChannelId, GuildChannel>> {
+        let mut channels = BTreeMap::new();
 
         for channel in http::get_channels(self.0)? {
             channels.insert(channel.id, channel);

@@ -74,7 +74,7 @@ use super::Permissions;
 /// [`Error::Model`]: ../../enum.Error.html#variant.Model
 /// [`GuildId::ban`]: ../id/struct.GuildId.html#method.ban
 /// [`model`]: ../index.html
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     /// When attempting to delete below or above the minimum and maximum allowed
     /// number of messages.

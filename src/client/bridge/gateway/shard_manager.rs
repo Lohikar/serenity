@@ -2,7 +2,7 @@ use gateway::InterMessage;
 use internal::prelude::*;
 use parking_lot::Mutex;
 use std::{
-    collections::{HashMap, VecDeque},
+    collections::{BTreeMap, VecDeque},
     sync::{
         mpsc::{self, Sender},
         Arc
@@ -114,7 +114,7 @@ pub struct ShardManager {
     /// **Note**: It is highly unrecommended to mutate this yourself unless you
     /// need to. Instead prefer to use methods on this struct that are provided
     /// where possible.
-    pub runners: Arc<Mutex<HashMap<ShardId, ShardRunnerInfo>>>,
+    pub runners: Arc<Mutex<BTreeMap<ShardId, ShardRunnerInfo>>>,
     /// The index of the first shard to initialize, 0-indexed.
     shard_index: u64,
     /// The number of shards to initialize.
@@ -133,7 +133,7 @@ impl ShardManager {
         let (thread_tx, thread_rx) = mpsc::channel();
         let (shard_queue_tx, shard_queue_rx) = mpsc::channel();
 
-        let runners = Arc::new(Mutex::new(HashMap::new()));
+        let runners = Arc::new(Mutex::new(BTreeMap::new()));
 
         let mut shard_queuer = ShardQueuer {
             data: Arc::clone(opt.data),

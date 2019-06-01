@@ -64,7 +64,7 @@ pub static JOIN_MESSAGES: &'static [&'static str] = &[
 ];
 
 /// Enum to map gateway opcodes.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum OpCode {
     /// Dispatches an event.
     Event = 0,
@@ -130,7 +130,7 @@ impl OpCode {
 
 
 /// Enum to map voice opcodes.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum VoiceOpCode {
     /// Used to begin a voice websocket connection.
     Identify = 0,

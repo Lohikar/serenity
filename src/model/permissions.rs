@@ -155,7 +155,7 @@ pub const PRESET_VOICE: Permissions = Permissions {
 /// [`Role`]: ../guild/struct.Role.html
 /// [`User`]: ../user/struct.User.html
 ///
-#[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+#[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord)]
 pub struct Permissions {
     bits: u64
 }

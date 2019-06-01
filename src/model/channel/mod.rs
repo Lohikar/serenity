@@ -600,7 +600,7 @@ impl Display for Channel {
 }
 
 /// A representation of a type of channel.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ChannelType {
     /// An indicator that the channel is a text [`GuildChannel`].
     ///
@@ -728,7 +728,7 @@ mod test {
     mod model_utils {
         use model::prelude::*;
         use parking_lot::RwLock;
-        use std::collections::HashMap;
+        use std::collections::BTreeMap;
         use std::sync::Arc;
 
         fn group() -> Group {
@@ -739,7 +739,7 @@ mod test {
                 last_pin_timestamp: None,
                 name: None,
                 owner_id: UserId(2),
-                recipients: HashMap::new(),
+                recipients: BTreeMap::new(),
             }
         }
 

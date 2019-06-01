@@ -1,12 +1,12 @@
 use gateway::InterMessage;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::sync::mpsc::Sender as MpscSender;
 use ::model::id::{ChannelId, GuildId, UserId};
 use ::voice::{Handler, Manager};
 use ::utils;
 
 pub struct ClientVoiceManager {
-    managers: HashMap<u64, Manager>,
+    managers: BTreeMap<u64, Manager>,
     shard_count: u64,
     user_id: UserId,
 }
@@ -14,7 +14,7 @@ pub struct ClientVoiceManager {
 impl ClientVoiceManager {
     pub fn new(shard_count: u64, user_id: UserId) -> Self {
         Self {
-            managers: HashMap::default(),
+            managers: BTreeMap::default(),
             shard_count,
             user_id,
         }

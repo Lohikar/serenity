@@ -1,7 +1,7 @@
 // Most of this is shamelessly copied from
 // <https://github.com/hyperium/hyper/blob/4351ed1d13e6f66b8dd3ef9f2b74776d02752ed7/src/header/internals/vec_map.rs>
 
-/// Like `HashMap` but solely uses a vector instead.
+/// Like `BTreeMap` but solely uses a vector instead.
 ///
 /// note: This is for internal use.
 #[derive(Clone, Debug, Default)]

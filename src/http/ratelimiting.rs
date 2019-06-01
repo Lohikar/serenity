@@ -49,7 +49,7 @@ use hyper::status::StatusCode;
 use internal::prelude::*;
 use parking_lot::Mutex;
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     sync::Arc,
     time::Duration,
     str,
@@ -79,7 +79,7 @@ lazy_static! {
     /// block requests yourself. This has the side-effect of potentially
     /// blocking many of your event handlers or framework commands.
     pub static ref GLOBAL: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
-    /// The routes mutex is a HashMap of each [`Route`] and their respective
+    /// The routes mutex is a BTreeMap of each [`Route`] and their respective
     /// ratelimit information.
     ///
     /// See the documentation for [`RateLimit`] for more information on how the
@@ -99,8 +99,8 @@ lazy_static! {
     ///
     /// [`RateLimit`]: struct.RateLimit.html
     /// [`Route`]: ../routing/enum.Route.html
-    pub static ref ROUTES: Arc<Mutex<HashMap<Route, Arc<Mutex<RateLimit>>>>> = {
-        Arc::new(Mutex::new(HashMap::default()))
+    pub static ref ROUTES: Arc<Mutex<BTreeMap<Route, Arc<Mutex<RateLimit>>>>> = {
+        Arc::new(Mutex::new(BTreeMap::default()))
     };
 }
 

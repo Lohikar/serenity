@@ -62,7 +62,7 @@ lazy_static! {
 /// An method used for ratelimiting special routes.
 ///
 /// This is needed because `hyper`'s `Method` enum does not derive Copy.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum LightMethod {
     /// Indicates that a route is for the `DELETE` method only.
     Delete,

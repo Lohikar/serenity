@@ -127,12 +127,12 @@ pub struct Client {
     /// use serenity::prelude::*;
     /// use serenity::model::prelude::*;
     /// use typemap::Key;
-    /// use std::{collections::HashMap, env};
+    /// use std::{collections::BTreeMap, env};
     ///
     /// struct MessageEventCounter;
     ///
     /// impl Key for MessageEventCounter {
-    ///     type Value = HashMap<String, u64>;
+    ///     type Value = BTreeMap<String, u64>;
     /// }
     ///
     /// fn reg<S>(ctx: Context, name: S)
@@ -165,7 +165,7 @@ pub struct Client {
     ///
     /// {
     ///     let mut data = client.data.lock();
-    ///     data.insert::<MessageEventCounter>(HashMap::default());
+    ///     data.insert::<MessageEventCounter>(BTreeMap::default());
     /// }
     ///
     /// client.start().expect("Could not start client.");
@@ -181,18 +181,18 @@ pub struct Client {
     /// [`Event::MessageUpdate`]: ../model/event/enum.Event.html#variant.MessageUpdate
     /// [example 05]: https://github.com/serenity-rs/serenity/tree/current/examples/05_command_framework
     pub data: Arc<Mutex<ShareMap>>,
-    /// A HashMap of all shards instantiated by the Client.
+    /// A BTreeMap of all shards instantiated by the Client.
     ///
     /// The key is the shard ID and the value is the shard itself.
     ///
     /// # Examples
     ///
     /// If you call [`client.start_shard(3, 5)`][`Client::start_shard`], this
-    /// HashMap will only ever contain a single key of `3`, as that's the only
+    /// BTreeMap will only ever contain a single key of `3`, as that's the only
     /// Shard the client is responsible for.
     ///
     /// If you call [`client.start_shards(10)`][`Client::start_shards`], this
-    /// HashMap will contain keys 0 through 9, one for each shard handled by the
+    /// BTreeMap will contain keys 0 through 9, one for each shard handled by the
     /// client.
     ///
     /// Printing the number of shards currently instantiated by the client every

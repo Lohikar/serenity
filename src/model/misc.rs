@@ -206,7 +206,7 @@ impl_from_str! { struct:
 }
 
 /// A version of an emoji used only when solely the Id and name are known.
-#[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct EmojiIdentifier {
     /// The Id of the emoji.
     pub id: EmojiId,
@@ -273,7 +273,7 @@ pub struct IncidentUpdate {
 }
 
 /// The type of status update during a service incident.
-#[derive(Copy, Clone, Debug, Deserialize, Hash, Eq, PartialEq, PartialOrd, Ord, Serialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Eq, PartialEq, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum IncidentStatus {
     Identified,
