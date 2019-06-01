@@ -470,7 +470,7 @@ impl User {
     // The universe is still fine, and nothing implodes.
     //
     // (AKA: Clippy is wrong and so we have to mark as allowing this lint.)
-    #[allow(let_and_return)]
+    // #[allow(let_and_return)]
     #[cfg(feature = "builder")]
     pub fn direct_message<F>(&self, f: F) -> Result<Message>
         where F: FnOnce(CreateMessage) -> CreateMessage {
@@ -483,13 +483,11 @@ impl User {
                 let finding = {
                     let cache = CACHE.read();
 
-                    let finding = cache.private_channels
+                    cache.private_channels
                         .values()
                         .map(|ch| ch.read())
                         .find(|ch| ch.recipient.read().id == self.id)
-                        .map(|ch| ch.id);
-
-                    finding
+                        .map(|ch| ch.id)
                 };
 
                 if let Some(finding) = finding {
@@ -701,8 +699,6 @@ impl User {
     pub fn refresh(&mut self) -> Result<()> {
         self.id.to_user().map(|replacement| {
             mem::replace(self, replacement);
-
-            ()
         })
     }
 

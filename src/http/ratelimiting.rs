@@ -38,7 +38,6 @@
 //! differentiating between different ratelimits.
 //!
 //! [Taken from]: https://discordapp.com/developers/docs/topics/rate-limits#rate-limits
-#![allow(zero_ptr)]
 
 pub use super::routing::Route;
 

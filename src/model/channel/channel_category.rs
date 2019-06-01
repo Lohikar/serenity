@@ -120,7 +120,6 @@ impl ChannelCategory {
                 position,
                 kind,
             };
-            ()
         })
     }
 

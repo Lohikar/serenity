@@ -1738,7 +1738,6 @@ fn closest_to_origin(origin: &str, word_a: &str, word_b: &str) -> std::cmp::Orde
 ///
 /// This is used to differentiate whether a guild itself can be used or whether
 /// a guild needs to be retrieved from the cache.
-#[allow(large_enum_variant)]
 #[derive(Clone, Debug)]
 pub enum GuildContainer {
     /// A guild which can have its contents directly searched.
@@ -1828,7 +1827,6 @@ pub struct GuildUnavailable {
     pub unavailable: bool,
 }
 
-#[allow(large_enum_variant)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum GuildStatus {

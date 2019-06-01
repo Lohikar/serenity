@@ -113,7 +113,7 @@ fn dispatch_message<H>(
     });
 }
 
-#[allow(cyclomatic_complexity, unused_assignments, unused_mut)]
+#[allow(clippy::cognitive_complexity, unused_assignments, unused_mut)]
 fn handle_event<H: EventHandler + Send + Sync + 'static>(
     event: DispatchEvent,
     data: &Arc<Mutex<ShareMap>>,

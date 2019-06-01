@@ -104,9 +104,7 @@
 //! [examples]: https://github.com/serenity-rs/serenity/tree/current/examples
 //! [gateway docs]: gateway/index.html
 #![doc(html_root_url = "https://docs.rs/serenity/*")]
-#![allow(unknown_lints)]
-#![allow(doc_markdown, inline_always)]
-#![warn(enum_glob_use, if_not_else)]
+#![warn(clippy::enum_glob_use, clippy::if_not_else)]
 
 #[macro_use]
 extern crate bitflags;

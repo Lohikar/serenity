@@ -1247,7 +1247,6 @@ pub struct WebhookUpdateEvent {
     pub guild_id: GuildId,
 }
 
-#[allow(large_enum_variant)]
 #[derive(Debug, Clone, Serialize)]
 #[serde(untagged)]
 pub enum GatewayEvent {
@@ -1327,7 +1326,6 @@ impl<'de> Deserialize<'de> for GatewayEvent {
 }
 
 /// Event received over a websocket connection
-#[allow(large_enum_variant)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum Event {
     /// A [`Channel`] was created.
