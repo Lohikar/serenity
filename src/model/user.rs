@@ -483,11 +483,13 @@ impl User {
                 let finding = {
                     let cache = CACHE.read();
 
-                    cache.private_channels
+                    let finding = cache.private_channels
                         .values()
                         .map(|ch| ch.read())
                         .find(|ch| ch.recipient.read().id == self.id)
-                        .map(|ch| ch.id)
+                        .map(|ch| ch.id);
+
+                    finding
                 };
 
                 if let Some(finding) = finding {
