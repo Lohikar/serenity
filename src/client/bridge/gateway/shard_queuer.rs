@@ -28,8 +28,6 @@ use ::gateway::ConnectionStage;
 
 #[cfg(feature = "voice")]
 use client::bridge::voice::ClientVoiceManager;
-#[cfg(feature = "framework")]
-use framework::Framework;
 
 const WAIT_BETWEEN_BOOTS_IN_SECONDS: u64 = 5;
 
@@ -50,9 +48,6 @@ pub struct ShardQueuer<H: EventHandler + Send + Sync + 'static> {
     ///
     /// [`Client`]: ../../struct.Client.html
     pub event_handler: Arc<H>,
-    /// A copy of the framework
-    #[cfg(feature = "framework")]
-    pub framework: Arc<Mutex<Option<Box<Framework + Send>>>>,
     /// The instant that a shard was last started.
     ///
     /// This is used to determine how long to wait between shard IDENTIFYs.
@@ -181,8 +176,6 @@ impl<H: EventHandler + Send + Sync + 'static> ShardQueuer<H> {
         let mut runner = ShardRunner::new(ShardRunnerOptions {
             data: Arc::clone(&self.data),
             event_handler: Arc::clone(&self.event_handler),
-            #[cfg(feature = "framework")]
-            framework: Arc::clone(&self.framework),
             manager_tx: self.manager_tx.clone(),
             threadpool: self.threadpool.clone(),
             #[cfg(feature = "voice")]

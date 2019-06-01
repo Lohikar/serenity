@@ -47,8 +47,6 @@ use std::sync::Arc;
 use threadpool::ThreadPool;
 use typemap::ShareMap;
 
-#[cfg(feature = "framework")]
-use framework::Framework;
 #[cfg(feature = "voice")]
 use model::id::UserId;
 #[cfg(feature = "voice")]
@@ -183,13 +181,6 @@ pub struct Client {
     /// [`Event::MessageUpdate`]: ../model/event/enum.Event.html#variant.MessageUpdate
     /// [example 05]: https://github.com/serenity-rs/serenity/tree/current/examples/05_command_framework
     pub data: Arc<Mutex<ShareMap>>,
-    /// A vector of all active shards that have received their [`Event::Ready`]
-    /// payload, and have dispatched to [`on_ready`] if an event handler was
-    /// configured.
-    ///
-    /// [`Event::Ready`]: ../model/event/enum.Event.html#variant.Ready
-    /// [`on_ready`]: #method.on_ready
-    #[cfg(feature = "framework")] framework: Arc<Mutex<Option<Box<Framework + Send>>>>,
     /// A HashMap of all shards instantiated by the Client.
     ///
     /// The key is the shard ID and the value is the shard itself.
@@ -355,8 +346,6 @@ impl Client {
         let data = Arc::new(Mutex::new(ShareMap::custom()));
         let event_handler = Arc::new(handler);
 
-        #[cfg(feature = "framework")]
-        let framework = Arc::new(Mutex::new(None));
         #[cfg(feature = "voice")]
         let voice_manager = Arc::new(Mutex::new(ClientVoiceManager::new(
             0,
@@ -367,8 +356,6 @@ impl Client {
             ShardManager::new(ShardManagerOptions {
                 data: &data,
                 event_handler: &event_handler,
-                #[cfg(feature = "framework")]
-                framework: &framework,
                 shard_index: 0,
                 shard_init: 0,
                 shard_total: 0,
@@ -383,8 +370,6 @@ impl Client {
         Ok(Client {
             token: locked,
             ws_uri: url,
-            #[cfg(feature = "framework")]
-            framework,
             data,
             shard_manager,
             shard_manager_worker,
@@ -392,113 +377,6 @@ impl Client {
             #[cfg(feature = "voice")]
             voice_manager,
         })
-    }
-
-    /// Sets a framework to be used with the client. All message events will be
-    /// passed through the framework _after_ being passed to the [`message`]
-    /// event handler.
-    ///
-    /// See the [framework module-level documentation][framework docs] for more
-    /// information on usage.
-    ///
-    /// # Examples
-    ///
-    /// Create a simple framework that responds to a `~ping` command:
-    ///
-    /// ```rust,no_run
-    /// # use serenity::prelude::EventHandler;
-    /// # use std::error::Error;
-    /// #
-    /// use serenity::framework::StandardFramework;
-    ///
-    /// struct Handler;
-    ///
-    /// impl EventHandler for Handler {}
-    /// # fn try_main() -> Result<(), Box<Error>> {
-    /// use serenity::Client;
-    /// use std::env;
-    ///
-    /// let mut client = Client::new(&env::var("DISCORD_TOKEN")?, Handler)?;
-    /// client.with_framework(StandardFramework::new()
-    ///     .configure(|c| c.prefix("~"))
-    ///     .on("ping", |_, msg, _| {
-    ///         msg.channel_id.say("Pong!")?;
-    ///
-    ///         Ok(())
-    ///      }));
-    /// # Ok(())
-    /// # }
-    /// #
-    /// # fn main() {
-    /// #     try_main().unwrap();
-    /// # }
-    /// ```
-    ///
-    /// Using your own framework:
-    ///
-    /// ```rust,ignore
-    /// # use serenity::prelude::EventHandler;
-    /// # use std::error::Error;
-    /// #
-    /// use serenity::Framework;
-    /// use serenity::client::Context;
-    /// use serenity::model::*;
-    /// use tokio_core::reactor::Handle;
-    /// use std::collections::HashMap;
-    ///
-    ///
-    /// struct MyFramework {
-    ///     commands: HashMap<String, Box<Fn(Message, Vec<String>)>>,
-    /// }
-    ///
-    /// impl Framework for MyFramework {
-    ///     fn dispatch(&mut self, _: Context, msg: Message, tokio_handle: &Handle) {
-    ///         let args = msg.content.split_whitespace();
-    ///         let command = match args.next() {
-    ///             Some(command) => {
-    ///                 if !command.starts_with('*') { return; }
-    ///                 command
-    ///             },
-    ///             None => return,
-    ///         };
-    ///
-    ///         let command = match self.commands.get(&command) {
-    ///             Some(command) => command, None => return,
-    ///         };
-    ///
-    ///         tokio_handle.spawn_fn(move || { (command)(msg, args); Ok() });
-    ///     }
-    /// }
-    ///
-    /// struct Handler;
-    ///
-    /// impl EventHandler for Handler {}
-    ///
-    /// # fn try_main() -> Result<(), Box<Error>> {
-    /// use serenity::Client;
-    /// use std::env;
-    ///
-    /// let mut client = Client::new(&token, Handler).unwrap();
-    /// client.with_framework(MyFramework { commands: {
-    ///     let mut map = HashMap::new();
-    ///     map.insert("ping".to_string(), Box::new(|msg, _| msg.channel_id.say("pong!")));
-    ///     map
-    /// }});
-    /// # Ok(())
-    /// # }
-    /// #
-    /// # fn main() {
-    /// #     try_main().unwrap();
-    /// # }
-    /// ```
-    /// Refer to the documentation for the `framework` module for more in-depth
-    /// information.
-    ///
-    /// [`message`]: trait.EventHandler.html#method.message
-    /// [framework docs]: ../framework/index.html
-    #[cfg(feature = "framework")]
-    pub fn with_framework<F: Framework + Send + 'static>(&mut self, f: F) {
-        *self.framework.lock() = Some(Box::new(f));
     }
 
     /// Establish the connection and start listening for events.
@@ -835,16 +713,6 @@ impl Client {
                   feature = "voice"))]
         {
             let user = http::get_current_user()?;
-
-            // Update the framework's current user if the feature is enabled.
-            //
-            // This also acts as a form of check to ensure the token is correct.
-            #[cfg(all(feature = "standard_framework", feature = "framework"))]
-            {
-                if let Some(ref mut framework) = *self.framework.lock() {
-                    framework.update_current_user(user.id);
-                }
-            }
 
             #[cfg(feature = "voice")]
             {

@@ -24,8 +24,6 @@ use websocket::{
     WebSocketError
 };
 
-#[cfg(feature = "framework")]
-use framework::Framework;
 #[cfg(feature = "voice")]
 use super::super::voice::ClientVoiceManager;
 
@@ -35,8 +33,6 @@ use super::super::voice::ClientVoiceManager;
 pub struct ShardRunner<H: EventHandler + Send + Sync + 'static> {
     data: Arc<Mutex<ShareMap>>,
     event_handler: Arc<H>,
-    #[cfg(feature = "framework")]
-    framework: Arc<Mutex<Option<Box<Framework + Send>>>>,
     manager_tx: Sender<ShardManagerMessage>,
     // channel to receive messages from the shard manager and dispatches
     runner_rx: Receiver<InterMessage>,
@@ -58,8 +54,6 @@ impl<H: EventHandler + Send + Sync + 'static> ShardRunner<H> {
             runner_tx: tx,
             data: opt.data,
             event_handler: opt.event_handler,
-            #[cfg(feature = "framework")]
-            framework: opt.framework,
             manager_tx: opt.manager_tx,
             shard: opt.shard,
             threadpool: opt.threadpool,
@@ -201,8 +195,6 @@ impl<H: EventHandler + Send + Sync + 'static> ShardRunner<H> {
     fn dispatch(&self, event: DispatchEvent) {
         dispatch(
             event,
-            #[cfg(feature = "framework")]
-            &self.framework,
             &self.data,
             &self.event_handler,
             &self.runner_tx,
@@ -486,8 +478,6 @@ impl<H: EventHandler + Send + Sync + 'static> ShardRunner<H> {
 pub struct ShardRunnerOptions<H: EventHandler + Send + Sync + 'static> {
     pub data: Arc<Mutex<ShareMap>>,
     pub event_handler: Arc<H>,
-    #[cfg(feature = "framework")]
-    pub framework: Arc<Mutex<Option<Box<Framework + Send>>>>,
     pub manager_tx: Sender<ShardManagerMessage>,
     pub shard: Shard,
     pub threadpool: ThreadPool,

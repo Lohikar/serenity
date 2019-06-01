@@ -170,8 +170,6 @@ pub mod builder;
 pub mod cache;
 #[cfg(feature = "client")]
 pub mod client;
-#[cfg(feature = "framework")]
-pub mod framework;
 #[cfg(feature = "gateway")]
 pub mod gateway;
 #[cfg(feature = "http")]

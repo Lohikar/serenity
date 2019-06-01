@@ -88,11 +88,9 @@ default = [
     "builder",
     "cache",
     "client",
-    "framework",
     "gateway",
     "model",
     "http",
-    "standard_framework",
     "utils"
 ]
 builder = ["utils"]
@@ -105,11 +103,9 @@ client = [
     "typemap",
 ]
 extras = []
-framework = ["client", "model", "utils"]
 gateway = ["flate2", "http", "websocket", "utils"]
 http = ["hyper", "hyper-native-tls", "lazy_static", "multipart", "native-tls"]
 model = ["builder", "http"]
-standard_framework = ["framework"]
 utils = ["base64"]
 voice = ["byteorder", "gateway", "opus", "sodiumoxide"]
 websocket = ["evzht9h3nznqzwl"]

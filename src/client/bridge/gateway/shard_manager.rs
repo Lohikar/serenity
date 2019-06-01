@@ -22,8 +22,6 @@ use super::{
 use threadpool::ThreadPool;
 use typemap::ShareMap;
 
-#[cfg(feature = "framework")]
-use framework::Framework;
 #[cfg(feature = "voice")]
 use client::bridge::voice::ClientVoiceManager;
 
@@ -140,8 +138,6 @@ impl ShardManager {
         let mut shard_queuer = ShardQueuer {
             data: Arc::clone(opt.data),
             event_handler: Arc::clone(opt.event_handler),
-            #[cfg(feature = "framework")]
-            framework: Arc::clone(opt.framework),
             last_start: None,
             manager_tx: thread_tx.clone(),
             queue: VecDeque::new(),
@@ -353,8 +349,6 @@ impl Drop for ShardManager {
 pub struct ShardManagerOptions<'a, H: EventHandler + Send + Sync + 'static> {
     pub data: &'a Arc<Mutex<ShareMap>>,
     pub event_handler: &'a Arc<H>,
-    #[cfg(feature = "framework")]
-    pub framework: &'a Arc<Mutex<Option<Box<Framework + Send>>>>,
     pub shard_index: u64,
     pub shard_init: u64,
     pub shard_total: u64,

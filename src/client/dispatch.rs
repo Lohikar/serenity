@@ -15,8 +15,6 @@ use std::sync::mpsc::Sender;
 use threadpool::ThreadPool;
 use typemap::ShareMap;
 
-#[cfg(feature = "framework")]
-use framework::Framework;
 #[cfg(feature = "cache")]
 use model::id::GuildId;
 #[cfg(feature = "cache")]
@@ -69,45 +67,6 @@ pub(crate) enum DispatchEvent {
     Model(Event),
 }
 
-#[cfg(feature = "framework")]
-#[cfg_attr(feature = "cargo-clippy", allow(too_many_arguments))]
-pub(crate) fn dispatch<H: EventHandler + Send + Sync + 'static>(
-    event: DispatchEvent,
-    framework: &Arc<Mutex<Option<Box<Framework + Send>>>>,
-    data: &Arc<Mutex<ShareMap>>,
-    event_handler: &Arc<H>,
-    runner_tx: &Sender<InterMessage>,
-    threadpool: &ThreadPool,
-    shard_id: u64,
-) {
-    match event {
-        DispatchEvent::Model(Event::MessageCreate(mut event)) => {
-            update!(event);
-
-            let context = context(data, runner_tx, shard_id);
-            dispatch_message(
-                context.clone(),
-                event.message.clone(),
-                event_handler,
-                threadpool,
-            );
-
-            if let Some(ref mut framework) = *framework.lock() {
-                framework.dispatch(context, event.message, threadpool);
-            }
-        },
-        other => handle_event(
-            other,
-            data,
-            event_handler,
-            runner_tx,
-            threadpool,
-            shard_id,
-        ),
-    }
-}
-
-#[cfg(not(feature = "framework"))]
 #[allow(unused_mut)]
 pub(crate) fn dispatch<H: EventHandler + Send + Sync + 'static>(
     event: DispatchEvent,
