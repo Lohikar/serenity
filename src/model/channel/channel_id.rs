@@ -595,11 +595,9 @@ impl ChannelId {
     /// [Send Messages]: ../permissions/struct.Permissions.html#associatedconstant.SEND_MESSAGES
     #[cfg(all(feature = "utils", feature = "http"))]
     pub fn send_files<'a, F, T, It>(self, http: impl AsRef<Http>, files: It, f: F) -> Result<Message>
-        where for <'b> F: FnOnce(&'b mut CreateMessage<'a>) -> &'b mut CreateMessage<'a>,
+        where F: FnOnce(CreateMessage<'a>) -> CreateMessage<'a>,
               T: Into<AttachmentType<'a>>, It: IntoIterator<Item=T> {
-        let mut create_message = CreateMessage::default();
-        let msg = f(&mut create_message);
-
+        let mut msg = f(CreateMessage::default());
 
         if let Some(content) = msg.0.get(&"content") {
             if let Value::String(ref content) = *content {
@@ -662,7 +660,7 @@ impl ChannelId {
             http.as_ref().send_files(self.0, msg.2.clone(), map)?
         };
 
-        if let Some(reactions) = msg.1.clone() {
+        if let Some(reactions) = msg.1 {
             for reaction in reactions {
                 self.create_reaction(&http, message.id, reaction)?;
             }
