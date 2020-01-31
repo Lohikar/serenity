@@ -566,7 +566,7 @@ impl User {
     #[allow(clippy::let_and_return)]
     #[cfg(all(feature = "builder", feature = "client"))]
     pub fn direct_message<F>(&self, cache_http: impl CacheHttp, f: F) -> Result<Message>
-        where for <'a, 'b> F: FnOnce(&'b mut CreateMessage<'a>) -> &'b mut CreateMessage<'a> {
+        where for <'a> F: FnOnce(CreateMessage<'a>) -> CreateMessage<'a> {
         if self.bot {
             return Err(Error::Model(ModelError::MessagingBot));
         }
@@ -620,7 +620,7 @@ impl User {
     #[cfg(all(feature = "builder", feature = "client"))]
     #[inline]
     pub fn dm<F>(&self, cache_http: impl CacheHttp, f: F) -> Result<Message>
-    where for <'a, 'b> F: FnOnce(&'b mut CreateMessage<'a>) -> &'b mut CreateMessage<'a> {
+    where for <'a> F: FnOnce(CreateMessage<'a>) -> CreateMessage<'a> {
         self.direct_message(cache_http, f)
     }
 

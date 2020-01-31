@@ -60,20 +60,19 @@ impl<'a> CreateMessage<'a> {
     ///
     /// **Note**: Message contents must be under 2000 unicode code points.
     #[inline]
-    pub fn content<D: ToString>(&mut self, content: D) -> &mut Self {
-        self._content(content.to_string())
-    }
-
-    fn _content(&mut self, content: String) -> &mut Self {
-        self.0.insert("content", Value::String(content));
+    pub fn content<D: ToString>(mut self, content: D) -> Self {
+        self._content(content.to_string());
         self
     }
 
+    fn _content(&mut self, content: String) {
+        self.0.insert("content", Value::String(content));
+    }
+
     /// Set an embed for the message.
-    pub fn embed<F>(&mut self, f: F) -> &mut Self
-    where F: FnOnce(&mut CreateEmbed) -> &mut CreateEmbed {
-        let mut embed = CreateEmbed::default();
-        f(&mut embed);
+    pub fn embed<F>(mut self, f: F) -> Self
+    where F: FnOnce(CreateEmbed) -> CreateEmbed {
+        let embed = f(CreateEmbed::default());
         let map = utils::hashmap_to_json_map(embed.0);
         let embed = Value::Object(map);
 
