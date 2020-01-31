@@ -270,7 +270,7 @@ impl PrivateChannel {
     #[cfg(feature = "http")]
     #[inline]
     pub fn send_files<'a, F, T, It>(&self, http: impl AsRef<Http>, files: It, f: F) -> Result<Message>
-        where for <'b> F: FnOnce(&'b mut CreateMessage<'a>) -> &'b mut CreateMessage<'a>,
+        where F: FnOnce(CreateMessage<'a>) -> CreateMessage<'a>,
               T: Into<AttachmentType<'a>>, It: IntoIterator<Item=T> {
         self.id.send_files(&http, files, f)
     }
