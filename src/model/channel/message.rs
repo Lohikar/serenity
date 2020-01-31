@@ -245,9 +245,8 @@ impl Message {
 
         if let Some(embed) = self.embeds.get(0) {
             let embed = CreateEmbed::from(embed.clone());
-            builder.embed( |e| {
-                *e = embed;
-                e
+            builder.embed(|_| {
+                embed
             });
         }
 
