@@ -26,8 +26,6 @@ use threadpool::ThreadPool;
 use typemap::ShareMap;
 use log::{info, warn};
 
-#[cfg(feature = "framework")]
-use crate::framework::Framework;
 #[cfg(feature = "voice")]
 use crate::client::bridge::voice::ClientVoiceManager;
 
@@ -145,8 +143,6 @@ impl ShardManager {
             data: Arc::clone(opt.data),
             event_handler: opt.event_handler.as_ref().map(|h| Arc::clone(h)),
             raw_event_handler: opt.raw_event_handler.as_ref().map(|rh| Arc::clone(rh)),
-            #[cfg(feature = "framework")]
-            framework: Arc::clone(opt.framework),
             last_start: None,
             manager_tx: thread_tx.clone(),
             queue: VecDeque::new(),
@@ -377,8 +373,6 @@ pub struct ShardManagerOptions<'a> {
     pub data: &'a Arc<RwLock<ShareMap>>,
     pub event_handler: &'a Option<Arc<dyn EventHandler>>,
     pub raw_event_handler: &'a Option<Arc<dyn RawEventHandler>>,
-    #[cfg(feature = "framework")]
-    pub framework: &'a Arc<Mutex<Option<Box<dyn Framework + Send>>>>,
     pub shard_index: u64,
     pub shard_init: u64,
     pub shard_total: u64,

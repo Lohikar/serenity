@@ -71,8 +71,6 @@ pub mod builder;
 pub mod cache;
 #[cfg(feature = "client")]
 pub mod client;
-#[cfg(feature = "framework")]
-pub mod framework;
 #[cfg(feature = "gateway")]
 pub mod gateway;
 #[cfg(feature = "http")]
@@ -109,13 +107,3 @@ pub struct CacheAndHttp {
     pub http: Arc<Http>,
     __nonexhaustive: (),
 }
-
-// For the procedural macros defined in `command_attr`; do not remove!
-#[allow(clippy::useless_attribute)]
-#[allow(rust_2018_idioms)]
-extern crate self as serenity;
-
-// For the procedural macros in `command_attr`.
-#[cfg(feature = "standard_framework")]
-#[doc(hidden)]
-pub use static_assertions;

@@ -17,8 +17,6 @@ use typemap::ShareMap;
 use crate::http::Http;
 use crate::CacheAndHttp;
 
-#[cfg(feature = "framework")]
-use crate::framework::Framework;
 #[cfg(feature = "cache")]
 use crate::model::id::GuildId;
 #[cfg(feature = "cache")]
@@ -81,93 +79,7 @@ pub(crate) enum DispatchEvent {
     __Nonexhaustive,
 }
 
-#[cfg(feature = "framework")]
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn dispatch(
-    event: DispatchEvent,
-    framework: &Arc<Mutex<Option<Box<dyn Framework + Send>>>>,
-    data: &Arc<RwLock<ShareMap>>,
-    event_handler: &Option<Arc<dyn EventHandler>>,
-    raw_event_handler: &Option<Arc<dyn RawEventHandler>>,
-    runner_tx: &Sender<InterMessage>,
-    threadpool: &ThreadPool,
-    shard_id: u64,
-    cache_and_http: Arc<CacheAndHttp>,
-) {
-    match (event_handler, raw_event_handler) {
-        (None, None) => {}, // Do nothing
-        (Some(ref h), None) => {
-            match event {
-                DispatchEvent::Model(Event::MessageCreate(mut event)) => {
-                    update(&cache_and_http, &mut event);
-
-                    #[cfg(not(feature = "cache"))]
-                    let context = context(data, runner_tx, shard_id, &cache_and_http.http);
-                    #[cfg(feature = "cache")]
-                    let context = context(data, runner_tx, shard_id, &cache_and_http.http, &cache_and_http.cache);
-
-                    dispatch_message(
-                        context.clone(),
-                        event.message.clone(),
-                        h,
-                        threadpool,
-                    );
-                    if let Some(ref mut framework) = *framework.lock() {
-                        framework.dispatch(context, event.message, threadpool);
-                    }
-                },
-                other => {
-                    handle_event(
-                        other,
-                        data,
-                        h,
-                        runner_tx,
-                        threadpool,
-                        shard_id,
-                        cache_and_http,
-                    );
-                }
-            }
-        },
-        (None, Some(ref rh)) => {
-            if let DispatchEvent::Model(e) = event {
-                #[cfg(not(feature = "cache"))]
-                let context = context(data, runner_tx, shard_id, &cache_and_http.http);
-                #[cfg(feature = "cache")]
-                let context = context(data, runner_tx, shard_id, &cache_and_http.http, &cache_and_http.cache);
-
-                let event_handler = Arc::clone(rh);
-                threadpool.execute(move || {
-                    event_handler.raw_event(context, e);
-                });
-            }
-        },
-        (Some(_), Some(_)) => {
-            if let DispatchEvent::Model(ref e) = event {
-                    dispatch(DispatchEvent::Model(e.clone()),
-                             framework,
-                             data,
-                             &None,
-                             raw_event_handler,
-                             runner_tx,
-                             threadpool,
-                             shard_id,
-                             Arc::clone(&cache_and_http))
-            }
-            dispatch(event,
-                     framework,
-                     data,
-                     event_handler,
-                     &None,
-                     runner_tx,
-                     threadpool,
-                     shard_id,
-                     cache_and_http);
-        }
-    };
-}
-
-#[cfg(not(feature = "framework"))]
 pub(crate) fn dispatch(
     event: DispatchEvent,
     data: &Arc<RwLock<ShareMap>>,

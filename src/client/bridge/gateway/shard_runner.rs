@@ -29,8 +29,6 @@ use tungstenite::{
 };
 use typemap::ShareMap;
 
-#[cfg(feature = "framework")]
-use crate::framework::Framework;
 #[cfg(feature = "voice")]
 use super::super::voice::ClientVoiceManager;
 use log::{error, debug, warn};
@@ -42,8 +40,6 @@ pub struct ShardRunner {
     data: Arc<RwLock<ShareMap>>,
     event_handler: Option<Arc<dyn EventHandler>>,
     raw_event_handler: Option<Arc<dyn RawEventHandler>>,
-    #[cfg(feature = "framework")]
-    framework: Arc<Mutex<Option<Box<dyn Framework + Send>>>>,
     manager_tx: Sender<ShardManagerMessage>,
     // channel to receive messages from the shard manager and dispatches
     runner_rx: Receiver<InterMessage>,
@@ -67,8 +63,6 @@ impl ShardRunner {
             data: opt.data,
             event_handler: opt.event_handler,
             raw_event_handler: opt.raw_event_handler,
-            #[cfg(feature = "framework")]
-            framework: opt.framework,
             manager_tx: opt.manager_tx,
             shard: opt.shard,
             threadpool: opt.threadpool,
@@ -239,8 +233,6 @@ impl ShardRunner {
     fn dispatch(&self, event: DispatchEvent) {
         dispatch(
             event,
-            #[cfg(feature = "framework")]
-            &self.framework,
             &self.data,
             &self.event_handler,
             &self.raw_event_handler,
@@ -532,8 +524,6 @@ pub struct ShardRunnerOptions {
     pub data: Arc<RwLock<ShareMap>>,
     pub event_handler: Option<Arc<dyn EventHandler>>,
     pub raw_event_handler: Option<Arc<dyn RawEventHandler>>,
-    #[cfg(feature = "framework")]
-    pub framework: Arc<Mutex<Option<Box<dyn Framework + Send>>>>,
     pub manager_tx: Sender<ShardManagerMessage>,
     pub shard: Shard,
     pub threadpool: ThreadPool,
