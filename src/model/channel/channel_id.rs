@@ -638,9 +638,8 @@ impl ChannelId {
     /// [Send Messages]: ../permissions/struct.Permissions.html#associatedconstant.SEND_MESSAGES
     #[cfg(all(feature = "utils", feature = "http"))]
     pub fn send_message<'a, F>(self, http: impl AsRef<Http>, f: F) -> Result<Message>
-        where for <'b> F: FnOnce(&'b mut CreateMessage<'a>) -> &'b mut CreateMessage<'a> {
-        let mut create_message = CreateMessage::default();
-        let msg = f(&mut create_message);
+        where F: FnOnce(CreateMessage<'a>) -> CreateMessage<'a> {
+        let mut msg = f(CreateMessage::default());
 
         if !msg.2.is_empty() {
             if let Some(e) = msg.0.remove(&"embed") {

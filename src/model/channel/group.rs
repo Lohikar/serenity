@@ -353,7 +353,7 @@ impl Group {
     #[cfg(feature = "http")]
     #[inline]
     pub fn send_message<'a, F>(&self, http: impl AsRef<Http>, f: F) -> Result<Message>
-        where for <'b> F: FnOnce(&'b mut CreateMessage<'a>) -> &'b mut CreateMessage<'a> {
+        where F: FnOnce(CreateMessage<'a>) -> CreateMessage<'a> {
         self.channel_id.send_message(&http, f)
     }
 
