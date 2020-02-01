@@ -1,4 +1,5 @@
 use super::{EventHandler, RawEventHandler};
+use crate::CacheAndHttp;
 
 use std::fmt;
 use std::sync::Arc;
@@ -9,13 +10,14 @@ use std::time::Duration;
 /// A builder to extra things for altering the [`Client`].
 ///
 /// [`Client`]: ../struct.Client.html
-#[derive(Clone)]
 pub struct Extras {
     pub(crate) event_handler: Option<Arc<dyn EventHandler>>,
     pub(crate) raw_event_handler: Option<Arc<dyn RawEventHandler>>,
     #[cfg(feature = "cache")]
     pub(crate) timeout: Option<Duration>,
     pub(crate) guild_subscriptions: bool,
+    pub(crate) thread_count: usize,
+    pub(crate) cache_object: Option<Arc<CacheAndHttp>>
 }
 
 impl Extras {
@@ -57,6 +59,16 @@ impl Extras {
         self.guild_subscriptions = guild_subscriptions;
         self
     }
+
+    pub fn threads(&mut self, count: usize) -> &mut Self {
+        self.thread_count = count;
+        self
+    }
+
+    pub fn cache(&mut self, cache: Arc<CacheAndHttp>) -> &mut Self {
+        self.cache_object = Some(cache);
+        self
+    }
 }
 
 impl Default for Extras {
@@ -67,6 +79,8 @@ impl Default for Extras {
             #[cfg(feature = "cache")]
             timeout: None,
             guild_subscriptions: true,
+            thread_count: 5,
+            cache_object: None
         }
     }
 }
