@@ -54,6 +54,7 @@
 //! [gateway docs]: gateway/index.html
 #![doc(html_root_url = "https://docs.rs/serenity/*")]
 #![deny(rust_2018_idioms)]
+#![allow(clippy::needless_doctest_main)]
 
 #[macro_use]
 extern crate serde;
