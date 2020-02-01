@@ -391,13 +391,27 @@ impl Client {
             #[cfg(feature = "cache")]
             timeout,
             guild_subscriptions,
+            thread_count,
+            cache_object
         } = extras;
 
-        let http = Http::new_with_token(&token);
+        let cache_and_http = if let Some(obj) = cache_object {
+            obj
+        } else {
+            let http = Http::new_with_token(&token);
+            Arc::new(CacheAndHttp {
+                #[cfg(feature = "cache")]
+                cache: CacheRwLock::default(),
+                #[cfg(feature = "cache")]
+                update_cache_timeout: timeout,
+                http: Arc::new(http),
+                __nonexhaustive: (),
+            })
+        };
 
         let name = "serenity client".to_owned();
-        let threadpool = ThreadPool::with_name(name, 5);
-        let url = Arc::new(Mutex::new(http.get_gateway()?.url));
+        let threadpool = ThreadPool::with_name(name, thread_count);
+        let url = Arc::new(Mutex::new(cache_and_http.http.get_gateway()?.url));
         let data = Arc::new(RwLock::new(ShareMap::custom()));
 
         #[cfg(feature = "voice")]
@@ -406,14 +420,6 @@ impl Client {
             UserId(0),
         )));
 
-        let cache_and_http = Arc::new(CacheAndHttp {
-            #[cfg(feature = "cache")]
-            cache: CacheRwLock::default(),
-            #[cfg(feature = "cache")]
-            update_cache_timeout: timeout,
-            http: Arc::new(http),
-            __nonexhaustive: (),
-        });
 
         let (shard_manager, shard_manager_worker) = {
             ShardManager::new(ShardManagerOptions {
