@@ -8,7 +8,7 @@ use serde::ser::{
     Serializer
 };
 use serde_json;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use super::utils::{deserialize_emojis, deserialize_u64};
 use super::prelude::*;
 use crate::constants::{OpCode, VoiceOpCode};
@@ -19,7 +19,7 @@ use crate::cache::{Cache, CacheUpdate};
 #[cfg(feature = "cache")]
 use crate::internal::RwLockExt;
 #[cfg(feature = "cache")]
-use std::collections::hash_map::Entry;
+use std::collections::btree_map::Entry;
 #[cfg(feature = "cache")]
 use std::mem;
 
@@ -301,7 +301,7 @@ impl CacheUpdate for ChannelUpdateEvent {
                         let mut dest = e.get_mut().write();
 
                         if no_recipients {
-                            let recipients = mem::replace(&mut dest.recipients, HashMap::new());
+                            let recipients = mem::replace(&mut dest.recipients, BTreeMap::new());
 
                             dest.clone_from(&group.read());
 
@@ -463,7 +463,7 @@ impl Serialize for GuildDeleteEvent {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GuildEmojisUpdateEvent {
-    #[serde(serialize_with = "serialize_emojis", deserialize_with = "deserialize_emojis")] pub emojis: HashMap<EmojiId, Emoji>,
+    #[serde(serialize_with = "serialize_emojis", deserialize_with = "deserialize_emojis")] pub emojis: BTreeMap<EmojiId, Emoji>,
     pub guild_id: GuildId,
     #[serde(skip)]
     pub(crate) _nonexhaustive: (),
@@ -637,7 +637,7 @@ impl CacheUpdate for GuildMemberUpdateEvent {
 #[derive(Clone, Debug, Serialize)]
 pub struct GuildMembersChunkEvent {
     pub guild_id: GuildId,
-    pub members: HashMap<UserId, Member>,
+    pub members: BTreeMap<UserId, Member>,
     #[serde(skip)]
     pub(crate) _nonexhaustive: (),
 }
@@ -684,7 +684,7 @@ impl<'de> Deserialize<'de> for GuildMembersChunkEvent {
         let members = serde_json::from_value::<Vec<Member>>(members)
             .map(|members| members
                 .into_iter()
-                .fold(HashMap::new(), |mut acc, member| {
+                .fold(BTreeMap::new(), |mut acc, member| {
                     let id = member.user.read().id;
 
                     acc.insert(id, member);
@@ -1077,7 +1077,7 @@ impl CacheUpdate for PresencesReplaceEvent {
 
     fn update(&mut self, cache: &mut Cache) -> Option<()> {
         cache.presences.extend({
-            let mut p: HashMap<UserId, Presence> = HashMap::default();
+            let mut p: BTreeMap<UserId, Presence> = BTreeMap::default();
 
             for presence in &self.presences {
                 p.insert(presence.user_id, presence.clone());

@@ -371,7 +371,7 @@ impl GuildChannel {
             }
         }
 
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("name", Value::String(self.name.clone()));
         map.insert("position", Value::Number(Number::from(self.position)));
 

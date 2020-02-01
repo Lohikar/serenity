@@ -1,7 +1,7 @@
 use crate::gateway::InterMessage;
 use crate::model::id::{ChannelId, GuildId, UserId};
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     sync::mpsc::Sender as MpscSender
 };
 use super::Handler;
@@ -24,7 +24,7 @@ use super::Handler;
 /// [`Shard`]: ../gateway/struct.Shard.html
 #[derive(Clone, Debug)]
 pub struct Manager {
-    handlers: HashMap<GuildId, Handler>,
+    handlers: BTreeMap<GuildId, Handler>,
     user_id: UserId,
     ws: MpscSender<InterMessage>,
 }
@@ -32,7 +32,7 @@ pub struct Manager {
 impl Manager {
     pub(crate) fn new(ws: MpscSender<InterMessage>, user_id: UserId) -> Manager {
         Manager {
-            handlers: HashMap::new(),
+            handlers: BTreeMap::new(),
             user_id,
             ws,
         }

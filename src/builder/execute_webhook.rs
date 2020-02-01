@@ -1,5 +1,5 @@
 use serde_json::Value;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder to create the inner content of a [`Webhook`]'s execution.
 ///
@@ -48,7 +48,7 @@ use std::collections::HashMap;
 /// [`Webhook::execute`]: ../model/webhook/struct.Webhook.html#method.execute
 /// [`execute_webhook`]: ../http/client/struct.Http.html#method.execute_webhook
 #[derive(Clone, Debug)]
-pub struct ExecuteWebhook(pub HashMap<&'static str, Value>);
+pub struct ExecuteWebhook(pub BTreeMap<&'static str, Value>);
 
 impl ExecuteWebhook {
     /// Override the default avatar of the webhook with an image URL.
@@ -195,7 +195,7 @@ impl Default for ExecuteWebhook {
     /// [`Webhook`]: ../model/webhook/struct.Webhook.html
     /// [`tts`]: #method.tts
     fn default() -> ExecuteWebhook {
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("tts", Value::Bool(false));
 
         ExecuteWebhook(map)

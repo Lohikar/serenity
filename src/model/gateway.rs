@@ -545,9 +545,9 @@ impl Serialize for Presence {
 pub struct Ready {
     pub guilds: Vec<GuildStatus>,
     #[serde(default, serialize_with = "serialize_presences", deserialize_with = "deserialize_presences")]
-    pub presences: HashMap<UserId, Presence>,
+    pub presences: BTreeMap<UserId, Presence>,
     #[serde(default, serialize_with = "serialize_private_channels", deserialize_with = "deserialize_private_channels")]
-    pub private_channels: HashMap<ChannelId, Channel>,
+    pub private_channels: BTreeMap<ChannelId, Channel>,
     pub session_id: String,
     pub shard: Option<[u64; 2]>,
     #[serde(default, rename = "_trace")]

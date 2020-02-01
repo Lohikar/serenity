@@ -539,7 +539,7 @@ mod test {
     mod model_utils {
         use crate::model::prelude::*;
         use parking_lot::RwLock;
-        use std::collections::HashMap;
+        use std::collections::BTreeMap;
         use std::sync::Arc;
 
         fn group() -> Group {
@@ -550,7 +550,7 @@ mod test {
                 last_pin_timestamp: None,
                 name: None,
                 owner_id: UserId(2),
-                recipients: HashMap::new(),
+                recipients: BTreeMap::new(),
                 _nonexhaustive: (),
             }
         }

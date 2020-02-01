@@ -27,7 +27,7 @@ use parking_lot::Mutex;
 use rand::random;
 use serde::Deserialize;
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     io::Write,
     net::{SocketAddr, ToSocketAddrs, UdpSocket},
     sync::{
@@ -79,7 +79,7 @@ pub struct Connection {
     cipher: XSalsa20Poly1305,
     client: Arc<Mutex<WsClient>>,
     connection_info: ConnectionInfo,
-    decoder_map: HashMap<(u32, Channels), OpusDecoder>,
+    decoder_map: BTreeMap<(u32, Channels), OpusDecoder>,
     destination: SocketAddr,
     encoder: OpusEncoder,
     encoder_stereo: bool,
@@ -210,7 +210,7 @@ impl Connection {
             cipher,
             client: mutexed_client,
             connection_info: info,
-            decoder_map: HashMap::new(),
+            decoder_map: BTreeMap::new(),
             destination,
             encoder,
             encoder_stereo: false,

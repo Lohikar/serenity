@@ -86,7 +86,7 @@ impl ChannelCategory {
     pub fn edit<F>(&mut self, cache_http: impl CacheHttp, f: F) -> Result<()>
         where F: FnOnce(&mut EditChannel) -> &mut EditChannel
     {
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("name", Value::String(self.name.clone()));
         map.insert("position", Value::Number(Number::from(self.position)));
 

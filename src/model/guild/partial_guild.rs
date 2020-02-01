@@ -22,7 +22,7 @@ pub struct PartialGuild {
     pub default_message_notifications: DefaultMessageNotificationLevel,
     pub embed_channel_id: Option<ChannelId>,
     pub embed_enabled: bool,
-    #[serde(serialize_with = "serialize_emojis", deserialize_with = "deserialize_emojis")] pub emojis: HashMap<EmojiId, Emoji>,
+    #[serde(serialize_with = "serialize_emojis", deserialize_with = "deserialize_emojis")] pub emojis: BTreeMap<EmojiId, Emoji>,
     /// Features enabled for the guild.
     ///
     /// Refer to [`Guild::features`] for more information.
@@ -34,7 +34,7 @@ pub struct PartialGuild {
     pub name: String,
     pub owner_id: UserId,
     pub region: String,
-    #[serde(serialize_with = "serialize_roles", deserialize_with = "deserialize_roles")] pub roles: HashMap<RoleId, Role>,
+    #[serde(serialize_with = "serialize_roles", deserialize_with = "deserialize_roles")] pub roles: BTreeMap<RoleId, Role>,
     pub splash: Option<String>,
     pub verification_level: VerificationLevel,
     pub description: Option<String>,
@@ -98,7 +98,7 @@ impl PartialGuild {
     /// [`Guild`]: struct.Guild.html
     #[cfg(feature = "http")]
     #[inline]
-    pub fn channels(&self, http: impl AsRef<Http>) -> Result<HashMap<ChannelId, GuildChannel>> { self.id.channels(&http) }
+    pub fn channels(&self, http: impl AsRef<Http>) -> Result<BTreeMap<ChannelId, GuildChannel>> { self.id.channels(&http) }
 
     /// Creates a [`GuildChannel`] in the guild.
     ///

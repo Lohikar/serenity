@@ -46,7 +46,7 @@ use reqwest::{header::HeaderMap, StatusCode};
 use crate::internal::prelude::*;
 use parking_lot::{Mutex, RwLock};
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     sync::Arc,
     str::{
         self,
@@ -80,7 +80,7 @@ pub struct Ratelimiter {
     global: Arc<Mutex<()>>,
     // When futures is implemented, make tasks clear out their respective entry
     // when the 'reset' passes.
-    routes: Arc<RwLock<HashMap<Route, Arc<Mutex<Ratelimit>>>>>,
+    routes: Arc<RwLock<BTreeMap<Route, Arc<Mutex<Ratelimit>>>>>,
     token: String,
 }
 
@@ -103,7 +103,7 @@ impl Ratelimiter {
         }
     }
 
-    /// The routes mutex is a HashMap of each [`Route`] and their respective
+    /// The routes mutex is a BTreeMap of each [`Route`] and their respective
     /// ratelimit information.
     ///
     /// See the documentation for [`Ratelimit`] for more information on how the
@@ -127,7 +127,7 @@ impl Ratelimiter {
     ///
     /// [`Ratelimit`]: struct.Ratelimit.html
     /// [`Route`]: ../routing/enum.Route.html
-    pub fn routes(&self) -> Arc<RwLock<HashMap<Route, Arc<Mutex<Ratelimit>>>>> {
+    pub fn routes(&self) -> Arc<RwLock<BTreeMap<Route, Arc<Mutex<Ratelimit>>>>> {
         Arc::clone(&self.routes)
     }
 

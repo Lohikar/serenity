@@ -3,7 +3,7 @@ use crate::model::prelude::*;
 
 use serde_json::{json, Value};
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder for creating a new [`GuildChannel`] in a [`Guild`].
 ///
@@ -13,7 +13,7 @@ use std::collections::HashMap;
 /// [`Guild`]: ../model/guild/struct.Guild.html
 /// [`name`]: #method.name
 #[derive(Debug, Clone)]
-pub struct CreateChannel(pub HashMap<&'static str, Value>);
+pub struct CreateChannel(pub BTreeMap<&'static str, Value>);
 
 impl CreateChannel {
     /// Specify how to call this new channel.
@@ -137,7 +137,7 @@ impl Default for CreateChannel {
     /// let channel_builder = CreateChannel::default();
     /// ```
     fn default() -> Self {
-        let mut builder = CreateChannel(HashMap::new());
+        let mut builder = CreateChannel(BTreeMap::new());
         builder.kind(ChannelType::Text);
 
         builder

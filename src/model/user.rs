@@ -116,7 +116,7 @@ impl CurrentUser {
     #[cfg(feature = "http")]
     pub fn edit<F>(&mut self, http: impl AsRef<Http>, f: F) -> Result<()>
         where F: FnOnce(&mut EditProfile) -> &mut EditProfile {
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("username", Value::String(self.name.clone()));
 
         if let Some(email) = self.email.as_ref() {

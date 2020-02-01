@@ -4,7 +4,7 @@ use crate::CacheAndHttp;
 use parking_lot::Mutex;
 use parking_lot::RwLock;
 use std::{
-    collections::{HashMap, VecDeque},
+    collections::{BTreeMap, VecDeque},
     sync::{
         mpsc::{
             Receiver,
@@ -70,7 +70,7 @@ pub struct ShardQueuer {
     /// This will typically be filled with previously failed boots.
     pub queue: VecDeque<(u64, u64)>,
     /// A copy of the map of shard runners.
-    pub runners: Arc<Mutex<HashMap<ShardId, ShardRunnerInfo>>>,
+    pub runners: Arc<Mutex<BTreeMap<ShardId, ShardRunnerInfo>>>,
     /// A receiver channel for the shard queuer to be told to start shards.
     pub rx: Receiver<ShardQueuerMessage>,
     /// A copy of a threadpool to give shard runners.

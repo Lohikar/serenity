@@ -94,8 +94,8 @@ impl GuildId {
     ///
     /// [`Guild`]: ../guild/struct.Guild.html
     #[cfg(feature = "http")]
-    pub fn channels(self, http: impl AsRef<Http>) -> Result<HashMap<ChannelId, GuildChannel>> {
-        let mut channels = HashMap::new();
+    pub fn channels(self, http: impl AsRef<Http>) -> Result<BTreeMap<ChannelId, GuildChannel>> {
+        let mut channels = BTreeMap::new();
 
         // Clippy is suggesting:
         // consider removing

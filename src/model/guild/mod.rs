@@ -68,13 +68,13 @@ pub struct Guild {
     /// This contains all channels regardless of permissions (i.e. the ability
     /// of the bot to read from or connect to them).
     #[serde(serialize_with = "serialize_gen_locked_map")]
-    pub channels: HashMap<ChannelId, Arc<RwLock<GuildChannel>>>,
+    pub channels: BTreeMap<ChannelId, Arc<RwLock<GuildChannel>>>,
     /// Indicator of whether notifications for all messages are enabled by
     /// default in the guild.
     pub default_message_notifications: DefaultMessageNotificationLevel,
     /// All of the guild's custom emojis.
     #[serde(serialize_with = "serialize_gen_map")]
-    pub emojis: HashMap<EmojiId, Emoji>,
+    pub emojis: BTreeMap<EmojiId, Emoji>,
     /// Default explicit content filter level.
     pub explicit_content_filter: ExplicitContentFilter,
     /// VIP features enabled for the guild. Can be obtained through the
@@ -113,7 +113,7 @@ pub struct Guild {
     /// [`ReadyEvent`]: ../event/struct.ReadyEvent.html
     /// [`member_count`]: #structfield.member_count
     #[serde(serialize_with = "serialize_gen_map")]
-    pub members: HashMap<UserId, Member>,
+    pub members: BTreeMap<UserId, Member>,
     /// Indicator of whether the guild requires multi-factor authentication for
     /// [`Role`]s or [`User`]s with moderation permissions.
     ///
@@ -130,12 +130,12 @@ pub struct Guild {
     ///
     /// [`User`]: ../user/struct.User.html
     #[serde(serialize_with = "serialize_gen_map")]
-    pub presences: HashMap<UserId, Presence>,
+    pub presences: BTreeMap<UserId, Presence>,
     /// The region that the voice servers that the guild uses are located in.
     pub region: String,
     /// A mapping of the guild's roles.
     #[serde(serialize_with = "serialize_gen_map")]
-    pub roles: HashMap<RoleId, Role>,
+    pub roles: BTreeMap<RoleId, Role>,
     /// An identifying hash of the guild's splash icon.
     ///
     /// If the [`"InviteSplash"`] feature is enabled, this can be used to generate
@@ -149,7 +149,7 @@ pub struct Guild {
     ///
     /// [`User`]: ../user/struct.User.html
     #[serde(serialize_with = "serialize_gen_map")]
-    pub voice_states: HashMap<UserId, VoiceState>,
+    pub voice_states: BTreeMap<UserId, VoiceState>,
     /// The server's description
     pub description: Option<String>,
     /// The server's premium boosting level.
@@ -341,7 +341,7 @@ impl Guild {
     /// [`Guild`]: struct.Guild.html
     #[cfg(feature = "http")]
     #[inline]
-    pub fn channels(&self, http: impl AsRef<Http>) -> Result<HashMap<ChannelId, GuildChannel>> { self.id.channels(&http) }
+    pub fn channels(&self, http: impl AsRef<Http>) -> Result<BTreeMap<ChannelId, GuildChannel>> { self.id.channels(&http) }
 
     /// Creates a guild with the data provided.
     ///
@@ -1859,7 +1859,7 @@ impl<'de> Deserialize<'de> for Guild {
             Some(v) => Option::<String>::deserialize(v).map_err(DeError::custom)?,
             None => None,
         };
-        let preferred_locale = map.remove("preferred_locale") 
+        let preferred_locale = map.remove("preferred_locale")
             .ok_or_else(|| DeError::custom("expected preferred locale"))
             .and_then(String::deserialize)
             .map_err(DeError::custom)?;
@@ -2281,16 +2281,16 @@ mod test {
             let u = gen_user();
             let m = gen_member();
 
-            let hm1 = HashMap::new();
-            let hm2 = HashMap::new();
+            let hm1 = BTreeMap::new();
+            let hm2 = BTreeMap::new();
             let vec1 = Vec::new();
             let dt: DateTime<FixedOffset> = FixedOffset::east(5 * 3600)
                 .ymd(2016, 11, 08)
                 .and_hms(0, 0, 0);
-            let mut hm3 = HashMap::new();
-            let hm4 = HashMap::new();
-            let hm5 = HashMap::new();
-            let hm6 = HashMap::new();
+            let mut hm3 = BTreeMap::new();
+            let hm4 = BTreeMap::new();
+            let hm5 = BTreeMap::new();
+            let hm6 = BTreeMap::new();
 
             hm3.insert(u.id, m);
 

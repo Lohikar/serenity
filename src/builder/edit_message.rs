@@ -2,7 +2,7 @@ use crate::internal::prelude::*;
 use super::CreateEmbed;
 use crate::utils;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder to specify the fields to edit in an existing message.
 ///
@@ -32,7 +32,7 @@ use std::collections::HashMap;
 ///
 /// [`Message`]: ../model/channel/struct.Message.html
 #[derive(Clone, Debug, Default)]
-pub struct EditMessage(pub HashMap<&'static str, Value>);
+pub struct EditMessage(pub BTreeMap<&'static str, Value>);
 
 impl EditMessage {
     /// Set the content of the message.

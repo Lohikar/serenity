@@ -3,7 +3,7 @@ use crate::model::{
     guild::Role,
     Permissions
 };
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder to create or edit a [`Role`] for use via a number of model methods.
 ///
@@ -44,14 +44,14 @@ use std::collections::HashMap;
 /// [`Role`]: ../model/guild/struct.Role.html
 /// [`Role::edit`]: ../model/guild/struct.Role.html#method.edit
 #[derive(Clone, Debug, Default)]
-pub struct EditRole(pub HashMap<&'static str, Value>);
+pub struct EditRole(pub BTreeMap<&'static str, Value>);
 
 impl EditRole {
     /// Creates a new builder with the values of the given [`Role`].
     ///
     /// [`Role`]: ../model/guild/struct.Role.html
     pub fn new(role: &Role) -> Self {
-        let mut map = HashMap::with_capacity(8);
+        let mut map = BTreeMap::new();
 
         #[cfg(feature = "utils")]
         {

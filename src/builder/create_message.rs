@@ -4,7 +4,7 @@ use crate::model::channel::ReactionType;
 use super::CreateEmbed;
 use crate::utils;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder to specify the contents of an [`http::send_message`] request,
 /// primarily meant for use through [`ChannelId::send_message`].
@@ -53,7 +53,7 @@ use std::collections::HashMap;
 /// [`embed`]: #method.embed
 /// [`http::send_message`]: ../http/fn.send_message.html
 #[derive(Clone, Debug)]
-pub struct CreateMessage<'a>(pub HashMap<&'static str, Value>, pub Option<Vec<ReactionType>>, pub Vec<AttachmentType<'a>>);
+pub struct CreateMessage<'a>(pub BTreeMap<&'static str, Value>, pub Option<Vec<ReactionType>>, pub Vec<AttachmentType<'a>>);
 
 impl<'a> CreateMessage<'a> {
     /// Set the content of the message.
@@ -130,7 +130,7 @@ impl<'a> Default for CreateMessage<'a> {
     /// [`Message`]: ../model/channel/struct.Message.html
     /// [`tts`]: #method.tts
     fn default() -> CreateMessage<'a> {
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("tts", Value::Bool(false));
 
         CreateMessage(map, None, Vec::new())

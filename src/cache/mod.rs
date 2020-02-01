@@ -41,8 +41,8 @@ use std::str::FromStr;
 use crate::model::prelude::*;
 use parking_lot::RwLock;
 use std::collections::{
-    hash_map::Entry,
-    HashMap,
+    btree_map::Entry,
+    BTreeMap,
     HashSet,
     VecDeque,
 };
@@ -58,7 +58,7 @@ mod settings;
 pub use self::cache_update::CacheUpdate;
 pub use self::settings::Settings;
 
-type MessageCache = HashMap<ChannelId, HashMap<MessageId, Message>>;
+type MessageCache = BTreeMap<ChannelId, BTreeMap<MessageId, Message>>;
 
 pub trait FromStrAndCache: Sized {
     type Err;
@@ -108,21 +108,21 @@ pub struct Cache {
     /// [`Event::GuildDelete`]: ../model/event/struct.GuildDeleteEvent.html
     /// [`Event::GuildUnavailable`]: ../model/event/struct.GuildUnavailableEvent.html
     /// [`Guild`]: ../model/guild/struct.Guild.html
-    pub channels: HashMap<ChannelId, Arc<RwLock<GuildChannel>>>,
+    pub channels: BTreeMap<ChannelId, Arc<RwLock<GuildChannel>>>,
     /// A map of channel categories.
-    pub categories: HashMap<ChannelId, Arc<RwLock<ChannelCategory>>>,
+    pub categories: BTreeMap<ChannelId, Arc<RwLock<ChannelCategory>>>,
     /// A map of the groups that the current user is in.
     ///
     /// For bot users this will always be empty, except for in [special cases].
     ///
     /// [special cases]: index.html#special-cases-in-the-cache
-    pub groups: HashMap<ChannelId, Arc<RwLock<Group>>>,
+    pub groups: BTreeMap<ChannelId, Arc<RwLock<Group>>>,
     /// A map of guilds with full data available. This includes data like
     /// [`Role`]s and [`Emoji`]s that are not available through the REST API.
     ///
     /// [`Emoji`]: ../model/guild/struct.Emoji.html
     /// [`Role`]: ../model/guild/struct.Role.html
-    pub guilds: HashMap<GuildId, Arc<RwLock<Guild>>>,
+    pub guilds: BTreeMap<GuildId, Arc<RwLock<Guild>>>,
     /// A map of channels to messages.
     ///
     /// This is a map of channel IDs to another map of message IDs to messages.
@@ -135,14 +135,14 @@ pub struct Cache {
     /// note is equivalent to deleting a note.
     ///
     /// This will always be empty for bot users.
-    pub notes: HashMap<UserId, String>,
+    pub notes: BTreeMap<UserId, String>,
     /// A map of users' presences. This is updated in real-time. Note that
     /// status updates are often "eaten" by the gateway, and this should not
     /// be treated as being entirely 100% accurate.
-    pub presences: HashMap<UserId, Presence>,
+    pub presences: BTreeMap<UserId, Presence>,
     /// A map of direct message channels that the current user has open with
     /// other users.
-    pub private_channels: HashMap<ChannelId, Arc<RwLock<PrivateChannel>>>,
+    pub private_channels: BTreeMap<ChannelId, Arc<RwLock<PrivateChannel>>>,
     /// The total number of shards being used by the bot.
     pub shard_count: u64,
     /// A list of guilds which are "unavailable". Refer to the documentation for
@@ -189,13 +189,13 @@ pub struct Cache {
     /// [`GuildMembersChunkEvent`]: ../model/event/struct.GuildMembersChunkEvent.html
     /// [`PresenceUpdateEvent`]: ../model/event/struct.PresenceUpdateEvent.html
     /// [`ReadyEvent`]: ../model/event/struct.ReadyEvent.html
-    pub users: HashMap<UserId, Arc<RwLock<User>>>,
+    pub users: BTreeMap<UserId, Arc<RwLock<User>>>,
     /// Queue of message IDs for each channel.
     ///
     /// This is simply a vecdeque so we can keep track of the order of messages
     /// inserted into the cache. When a maximum number of messages are in a
     /// channel's cache, we can pop the front and remove that ID from the cache.
-    pub(crate) message_queue: HashMap<ChannelId, VecDeque<MessageId>>,
+    pub(crate) message_queue: BTreeMap<ChannelId, VecDeque<MessageId>>,
     /// The settings for the cache.
     settings: Settings,
     __nonexhaustive: (),
@@ -835,20 +835,20 @@ impl Cache {
 impl Default for Cache {
     fn default() -> Cache {
         Cache {
-            channels: HashMap::default(),
-            categories: HashMap::default(),
-            groups: HashMap::with_capacity(128),
-            guilds: HashMap::default(),
-            messages: HashMap::default(),
-            notes: HashMap::default(),
-            presences: HashMap::default(),
-            private_channels: HashMap::with_capacity(128),
+            channels: BTreeMap::default(),
+            categories: BTreeMap::default(),
+            groups: BTreeMap::new(),
+            guilds: BTreeMap::default(),
+            messages: BTreeMap::default(),
+            notes: BTreeMap::default(),
+            presences: BTreeMap::default(),
+            private_channels: BTreeMap::new(),
             settings: Settings::default(),
             shard_count: 1,
             unavailable_guilds: HashSet::default(),
             user: CurrentUser::default(),
-            users: HashMap::default(),
-            message_queue: HashMap::default(),
+            users: BTreeMap::default(),
+            message_queue: BTreeMap::default(),
             __nonexhaustive: (),
         }
     }
@@ -859,7 +859,7 @@ mod test {
     use chrono::DateTime;
     use serde_json::{Number, Value};
     use std::{
-        collections::HashMap,
+        collections::BTreeMap,
         sync::Arc,
     };
     use crate::{
@@ -973,7 +973,7 @@ mod test {
         // Test deletion of a guild channel's message cache when a GuildDeleteEvent
         // is received.
         let mut guild_create = {
-            let mut channels = HashMap::new();
+            let mut channels = BTreeMap::new();
             channels.insert(ChannelId(2), Arc::new(RwLock::new(guild_channel.clone())));
 
             GuildCreateEvent {
@@ -983,24 +983,24 @@ mod test {
                     afk_timeout: 0,
                     application_id: None,
                     default_message_notifications: DefaultMessageNotificationLevel::All,
-                    emojis: HashMap::new(),
+                    emojis: BTreeMap::new(),
                     explicit_content_filter: ExplicitContentFilter::None,
                     features: vec![],
                     icon: None,
                     joined_at: datetime,
                     large: false,
                     member_count: 0,
-                    members: HashMap::new(),
+                    members: BTreeMap::new(),
                     mfa_level: MfaLevel::None,
                     name: String::new(),
                     owner_id: UserId(3),
-                    presences: HashMap::new(),
+                    presences: BTreeMap::new(),
                     region: String::new(),
-                    roles: HashMap::new(),
+                    roles: BTreeMap::new(),
                     splash: None,
                     system_channel_id: None,
                     verification_level: VerificationLevel::Low,
-                    voice_states: HashMap::new(),
+                    voice_states: BTreeMap::new(),
                     description: None,
                     premium_tier: PremiumTier::Tier0,
                     channels,
@@ -1024,14 +1024,14 @@ mod test {
                 default_message_notifications: DefaultMessageNotificationLevel::All,
                 embed_channel_id: None,
                 embed_enabled: false,
-                emojis: HashMap::new(),
+                emojis: BTreeMap::new(),
                 features: vec![],
                 icon: None,
                 mfa_level: MfaLevel::None,
                 name: String::new(),
                 owner_id: UserId(3),
                 region: String::new(),
-                roles: HashMap::new(),
+                roles: BTreeMap::new(),
                 splash: None,
                 verification_level: VerificationLevel::Low,
                 description: None,

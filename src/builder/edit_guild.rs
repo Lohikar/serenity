@@ -1,6 +1,6 @@
 use crate::internal::prelude::*;
 use crate::model::prelude::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder to optionally edit certain fields of a [`Guild`]. This is meant
 /// for usage with [`Guild::edit`].
@@ -12,7 +12,7 @@ use std::collections::HashMap;
 /// [`Guild`]: ../model/guild/struct.Guild.html
 /// [Manage Guild]: ../model/permissions/struct.Permissions.html#associatedconstant.MANAGE_GUILD
 #[derive(Clone, Debug, Default)]
-pub struct EditGuild(pub HashMap<&'static str, Value>);
+pub struct EditGuild(pub BTreeMap<&'static str, Value>);
 
 impl EditGuild {
     /// Set the "AFK voice channel" that users are to move to if they have been

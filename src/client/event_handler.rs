@@ -2,7 +2,7 @@ use crate::model::prelude::*;
 use parking_lot::RwLock;
 use serde_json::Value;
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     sync::Arc
 };
 use super::context::Context;
@@ -115,7 +115,7 @@ pub trait EventHandler: Send + Sync {
     /// Dispatched when the emojis are updated.
     ///
     /// Provides the guild's id and the new state of the emojis in the guild.
-    fn guild_emojis_update(&self, _ctx: Context, _guild_id: GuildId, _current_state: HashMap<EmojiId, Emoji>) {}
+    fn guild_emojis_update(&self, _ctx: Context, _guild_id: GuildId, _current_state: BTreeMap<EmojiId, Emoji>) {}
 
     /// Dispatched when a guild's integration is added, updated or removed.
     ///
@@ -154,7 +154,7 @@ pub trait EventHandler: Send + Sync {
     /// Dispatched when the data for offline members was requested.
     ///
     /// Provides the guild's id and the data.
-    fn guild_members_chunk(&self, _ctx: Context, _guild_id: GuildId, _offline_members: HashMap<UserId, Member>) {}
+    fn guild_members_chunk(&self, _ctx: Context, _guild_id: GuildId, _offline_members: BTreeMap<UserId, Member>) {}
 
     /// Dispatched when a role is created.
     ///

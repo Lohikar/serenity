@@ -1,6 +1,6 @@
 use crate::internal::prelude::*;
 use crate::model::id::{ChannelId, RoleId};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder which edits the properties of a [`Member`], to be used in
 /// conjunction with [`Member::edit`].
@@ -8,7 +8,7 @@ use std::collections::HashMap;
 /// [`Member`]: ../model/guild/struct.Member.html
 /// [`Member::edit`]: ../model/guild/struct.Member.html#method.edit
 #[derive(Clone, Debug, Default)]
-pub struct EditMember(pub HashMap<&'static str, Value>);
+pub struct EditMember(pub BTreeMap<&'static str, Value>);
 
 impl EditMember {
     /// Whether to deafen the member.

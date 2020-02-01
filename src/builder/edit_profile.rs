@@ -1,12 +1,12 @@
 use crate::internal::prelude::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A builder to edit the current user's settings, to be used in conjunction
 /// with [`CurrentUser::edit`].
 ///
 /// [`CurrentUser::edit`]: ../model/user/struct.CurrentUser.html#method.edit
 #[derive(Clone, Debug, Default)]
-pub struct EditProfile(pub HashMap<&'static str, Value>);
+pub struct EditProfile(pub BTreeMap<&'static str, Value>);
 
 impl EditProfile {
     /// Sets the avatar of the current user. `None` can be passed to remove an

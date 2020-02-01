@@ -1,5 +1,5 @@
 use crate::model::id::MessageId;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// Builds a request for a request to the API to retrieve messages.
 ///
@@ -48,7 +48,7 @@ use std::collections::HashMap;
 ///
 /// [`GuildChannel::messages`]: ../model/channel/struct.GuildChannel.html#method.messages
 #[derive(Clone, Debug, Default)]
-pub struct GetMessages(pub HashMap<&'static str, u64>);
+pub struct GetMessages(pub BTreeMap<&'static str, u64>);
 
 impl GetMessages {
     /// Indicates to retrieve the messages after a specific message, given by

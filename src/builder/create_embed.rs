@@ -23,7 +23,7 @@ use chrono::{DateTime, TimeZone};
 use serde_json::{json, Value};
 
 use std::fmt::Display;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[cfg(feature = "utils")]
 use crate::utils::Colour;
@@ -40,7 +40,7 @@ use crate::utils::Colour;
 /// [`Embed`]: ../model/channel/struct.Embed.html
 /// [`ExecuteWebhook::embeds`]: struct.ExecuteWebhook.html#method.embeds
 #[derive(Clone, Debug)]
-pub struct CreateEmbed(pub HashMap<&'static str, Value>);
+pub struct CreateEmbed(pub BTreeMap<&'static str, Value>);
 
 impl CreateEmbed {
     /// Set the author of the embed.
@@ -342,7 +342,7 @@ impl CreateEmbed {
 impl Default for CreateEmbed {
     /// Creates a builder with default values, setting the `type` to `rich`.
     fn default() -> CreateEmbed {
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         map.insert("type", Value::String("rich".to_string()));
 
         CreateEmbed(map)
@@ -426,7 +426,7 @@ impl From<Embed> for CreateEmbed {
 /// [`CreateEmbed::author`]: struct.CreateEmbed.html#method.author
 /// [`name`]: #method.name
 #[derive(Clone, Debug, Default)]
-pub struct CreateEmbedAuthor(pub HashMap<&'static str, Value>);
+pub struct CreateEmbedAuthor(pub BTreeMap<&'static str, Value>);
 
 impl CreateEmbedAuthor {
     /// Set the URL of the author's icon.
@@ -456,7 +456,7 @@ impl CreateEmbedAuthor {
 /// [`Embed`]: ../model/channel/struct.Embed.html
 /// [`CreateEmbed::footer`]: struct.CreateEmbed.html#method.footer
 #[derive(Clone, Debug, Default)]
-pub struct CreateEmbedFooter(pub HashMap<&'static str, Value>);
+pub struct CreateEmbedFooter(pub BTreeMap<&'static str, Value>);
 
 impl CreateEmbedFooter {
     /// Set the icon URL's value. This only supports HTTP(S).
