@@ -3,7 +3,6 @@ use crate::internal::prelude::*;
 use crate::internal::ws_impl::{ReceiverExt, SenderExt};
 use crate::model::event::{Event, GatewayEvent};
 use crate::CacheAndHttp;
-use parking_lot::Mutex;
 use parking_lot::RwLock;
 use serde::Deserialize;
 use std::{

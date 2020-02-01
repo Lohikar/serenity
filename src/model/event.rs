@@ -1687,7 +1687,7 @@ pub fn deserialize_event_with_type(kind: EventType, v: Value) -> Result<Event> {
         },
         EventType::WebhookUpdate => Event::WebhookUpdate(serde_json::from_value(v)?),
         EventType::Other(kind) => Event::Unknown(UnknownEvent {
-            kind: kind.to_owned(),
+            kind,
             value: v,
             _nonexhaustive: (),
         }),
@@ -2022,7 +2022,7 @@ impl<'de> Deserialize<'de> for VoiceHeartbeatAck {
 pub struct VoiceReady {
     pub heartbeat_interval: u64,
     pub modes: Vec<String>,
-    pub ip: String, 
+    pub ip: String,
     pub port: u16,
     pub ssrc: u32,
     #[serde(skip)]

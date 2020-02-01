@@ -795,7 +795,7 @@ impl User {
             }
         }
 
-        guild_id.member(cache_http, &self.id).ok().and_then(|member| member.nick.clone())
+        guild_id.member(cache_http, &self.id).ok().and_then(|member| member.nick)
     }
 }
 

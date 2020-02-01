@@ -5,7 +5,7 @@ use crate::model::{
     guild::Member,
 };
 use std::{sync::{Arc, mpsc::Sender}};
-use parking_lot::{Mutex, RwLock};
+use parking_lot::RwLock;
 use super::{
     bridge::gateway::event::ClientEvent,
     event_handler::{EventHandler, RawEventHandler},
@@ -103,8 +103,8 @@ pub(crate) fn dispatch(
                     let context = context(data, runner_tx, shard_id, &cache_and_http.http, &cache_and_http.cache);
 
                     dispatch_message(
-                        context.clone(),
-                        event.message.clone(),
+                        context,
+                        event.message,
                         h,
                         threadpool,
                     );
@@ -123,33 +123,30 @@ pub(crate) fn dispatch(
             }
         },
         (None, Some(ref rh)) => {
-            match event {
-                DispatchEvent::Model(e) => {
-                    #[cfg(not(feature = "cache"))]
-                    let context = context(data, runner_tx, shard_id, &cache_and_http.http);
-                    #[cfg(feature = "cache")]
-                    let context = context(data, runner_tx, shard_id, &cache_and_http.http, &cache_and_http.cache);
+            if let DispatchEvent::Model(e) = event {
+                #[cfg(not(feature = "cache"))]
+                let context = context(data, runner_tx, shard_id, &cache_and_http.http);
+                #[cfg(feature = "cache")]
+                let context = context(data, runner_tx, shard_id, &cache_and_http.http, &cache_and_http.cache);
 
-                    let event_handler = Arc::clone(rh);
-                    threadpool.execute(move || {
-                        event_handler.raw_event(context, e);
-                    });
-                },
-                _ => {}
+                let event_handler = Arc::clone(rh);
+                threadpool.execute(move || {
+                    event_handler.raw_event(context, e);
+                });
             }
         },
-        (Some(ref h), Some(ref rh)) => {
-            match event {
-                DispatchEvent::Model(ref e) =>
-                    dispatch(DispatchEvent::Model(e.clone()),
-                             data,
-                             &None,
-                             raw_event_handler,
-                             runner_tx,
-                             threadpool,
-                             shard_id,
-                             Arc::clone(&cache_and_http)),
-                _ => {}
+        (Some(_), Some(_)) => {
+            if let DispatchEvent::Model(ref e) = event {
+                dispatch(
+                    DispatchEvent::Model(e.clone()),
+                    data,
+                    &None,
+                    raw_event_handler,
+                    runner_tx,
+                    threadpool,
+                    shard_id,
+                    Arc::clone(&cache_and_http)
+                )
             }
             dispatch(event,
                      data,
