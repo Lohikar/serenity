@@ -14,7 +14,7 @@ edition = "2018"
 [dependencies]
 bitflags = "1"
 log = "0.4"
-parking_lot = "0.9"
+parking_lot = "0.10"
 serde_json = "1"
 
 [dependencies.audiopus]
@@ -68,7 +68,7 @@ version = "1"
 [dependencies.tungstenite]
 default-features = false
 optional = true
-version = "0.9"
+version = "0.10"
 
 [dependencies.typemap]
 optional = true
