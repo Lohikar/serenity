@@ -421,6 +421,8 @@ pub enum ChannelType {
     /// [`GuildChannel`]: struct.GuildChannel.html
     Store = 6,
     Stage = 13,
+    Directory = 14,
+    Forum = 15,
     #[doc(hidden)]
     __Nonexhaustive,
 }
@@ -435,6 +437,8 @@ enum_number!(
         News,
         Store,
         Stage,
+        Directory,
+        Forum,
     }
 );
 
@@ -449,6 +453,8 @@ impl ChannelType {
             ChannelType::News => "news",
             ChannelType::Store => "store",
             ChannelType::Stage => "stage",
+            ChannelType::Directory => "directory",
+            ChannelType::Forum => "forum",
             ChannelType::__Nonexhaustive => unreachable!(),
         }
     }
@@ -463,6 +469,8 @@ impl ChannelType {
             ChannelType::News => 5,
             ChannelType::Store => 6,
             ChannelType::Stage => 13,
+            ChannelType::Directory => 14,
+            ChannelType::Forum => 15,
             ChannelType::__Nonexhaustive => unreachable!(),
         }
     }
