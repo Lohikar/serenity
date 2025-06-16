@@ -128,8 +128,11 @@ impl StdError for RustlsError {
 #[cfg(not(feature = "native_tls_backend"))]
 pub(crate) fn create_rustls_client(url: Url) -> Result<WsClient> {
     use std::convert::TryInto;
+    use rustls::crypto::CryptoProvider;
 
-    rustls::crypto::CryptoProvider::install_default(rustls::crypto::aws_lc_rs::default_provider()).expect("couldn't initialize default CryptoProvider");
+    if CryptoProvider::get_default().is_none() {
+        CryptoProvider::install_default(rustls::crypto::aws_lc_rs::default_provider()).expect("couldn't initialize default CryptoProvider");
+    }
 
     let mut root_certs = rustls::RootCertStore::empty();
     root_certs.roots = webpki_roots::TLS_SERVER_ROOTS.to_vec();
