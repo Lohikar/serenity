@@ -46,9 +46,10 @@ impl ReceiverExt for WsClient {
 impl SenderExt for WsClient {
     fn send_json(&mut self, value: &Value) -> Result<()> {
         serde_json::to_string(value)
+            .map(Into::into)
             .map(Message::Text)
             .map_err(Error::from)
-            .and_then(|m| self.write_message(m).map_err(Error::from))
+            .and_then(|m| self.send(m).map_err(Error::from))
     }
 }
 
@@ -126,8 +127,16 @@ impl StdError for RustlsError {
 // Create a tungstenite client with a rustls stream.
 #[cfg(not(feature = "native_tls_backend"))]
 pub(crate) fn create_rustls_client(url: Url) -> Result<WsClient> {
-    let mut config = rustls::ClientConfig::new();
-    config.root_store.add_server_trust_anchors(&webpki_roots::TLS_SERVER_ROOTS);
+    use std::convert::TryInto;
+
+    rustls::crypto::CryptoProvider::install_default(rustls::crypto::aws_lc_rs::default_provider()).expect("couldn't initialize default CryptoProvider");
+
+    let mut root_certs = rustls::RootCertStore::empty();
+    root_certs.roots = webpki_roots::TLS_SERVER_ROOTS.to_vec();
+
+    let config = rustls::ClientConfig::builder()
+        .with_root_certificates(Arc::new(root_certs))
+        .with_no_client_auth();
 
     let base_host = if let Some(h) = url.host_str() {
         let (dot, _) = h.rmatch_indices('.').nth(1).unwrap_or((0, ""));
@@ -138,10 +147,11 @@ pub(crate) fn create_rustls_client(url: Url) -> Result<WsClient> {
         base.to_owned()
     } else { "discord.gg".to_owned() };
 
-    let dns_name = webpki::DNSNameRef::try_from_ascii_str(&base_host)
+    let dns_name = base_host.try_into()
         .map_err(|_| RustlsError::WebPKI)?;
 
-    let session = rustls::ClientSession::new(&Arc::new(config), dns_name);
+    // It shouldn't be possible for rustls to return Err() here, the actual function is just an Ok().
+    let session = rustls::client::ClientConnection::new(Arc::new(config), dns_name).expect("Failed to create connection?");
 
     let port = url.port_or_known_default()
         .ok_or_else(|| Error::Url("No port number in the URL.".into()))?;
@@ -151,7 +161,7 @@ pub(crate) fn create_rustls_client(url: Url) -> Result<WsClient> {
     let socket = TcpStream::connect(addrs.as_slice())?;
     let tls = rustls::StreamOwned::new(session, socket);
 
-    let client = tungstenite::client(url, tls)
+    let client = tungstenite::client(url.as_str(), tls)
         .map_err(|_| RustlsError::HandshakeError)?;
 
     Ok(client.0)

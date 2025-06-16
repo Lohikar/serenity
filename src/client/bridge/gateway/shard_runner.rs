@@ -198,7 +198,7 @@ impl ShardRunner {
         // Send a Close Frame to Discord, which allows a bot to "log off"
         let _ = self.shard.client.close(Some(CloseFrame {
             code: close_code.into(),
-            reason: Cow::from(""),
+            reason: "".into(),
         }));
 
         // In return, we wait for either a Close Frame response, or an error, after which this WS is deemed
@@ -290,7 +290,7 @@ impl ShardRunner {
                     let reason = reason.unwrap_or_else(String::new);
                     let close = CloseFrame {
                         code: code.into(),
-                        reason: Cow::from(reason),
+                        reason: reason.into(),
                     };
                     self.shard.client.close(Some(close)).is_ok()
                 },

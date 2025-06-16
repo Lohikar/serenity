@@ -73,7 +73,7 @@ use crate::client::bridge::gateway::ShardClientMessage;
 pub type CurrentPresence = (Option<Activity>, OnlineStatus);
 
 #[cfg(not(feature = "native_tls_backend"))]
-pub type WsClient = WebSocket<rustls::StreamOwned<rustls::ClientSession, std::net::TcpStream>>;
+pub type WsClient = WebSocket<rustls::StreamOwned<rustls::client::ClientConnection, std::net::TcpStream>>;
 
 #[cfg(feature = "native_tls_backend")]
 pub type WsClient = WebSocket<AutoStream>;

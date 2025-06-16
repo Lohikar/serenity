@@ -396,7 +396,7 @@ impl Shard {
         Ok(Some(ShardAction::Heartbeat))
     }
 
-    fn handle_gateway_closed(&mut self, data: &Option<CloseFrame<'static>>) -> Result<Option<ShardAction>> {
+    fn handle_gateway_closed(&mut self, data: &Option<CloseFrame>) -> Result<Option<ShardAction>> {
         let num = data.as_ref().map(|d| d.code.into());
         let clean = num == Some(1000);
 
