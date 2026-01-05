@@ -423,6 +423,7 @@ pub enum ChannelType {
     Stage = 13,
     Directory = 14,
     Forum = 15,
+    Media = 16,
     #[doc(hidden)]
     __Nonexhaustive,
 }
@@ -439,6 +440,7 @@ enum_number!(
         Stage,
         Directory,
         Forum,
+        Media,
     }
 );
 
@@ -455,6 +457,7 @@ impl ChannelType {
             ChannelType::Stage => "stage",
             ChannelType::Directory => "directory",
             ChannelType::Forum => "forum",
+            ChannelType::Media => "media",
             ChannelType::__Nonexhaustive => unreachable!(),
         }
     }
@@ -471,6 +474,7 @@ impl ChannelType {
             ChannelType::Stage => 13,
             ChannelType::Directory => 14,
             ChannelType::Forum => 15,
+            ChannelType::Media => 16,
             ChannelType::__Nonexhaustive => unreachable!(),
         }
     }
