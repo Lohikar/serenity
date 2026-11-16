@@ -86,7 +86,7 @@ impl EditGuild {
     pub fn icon(&mut self, icon: Option<&str>) -> &mut Self {
         self.0.insert(
             "icon",
-            icon.map_or_else(|| Value::Null, |x| Value::String(x.to_string())),
+            icon.map_or(Value::Null, |x| Value::String(x.to_string())),
         );
         self
     }

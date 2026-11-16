@@ -326,7 +326,6 @@ impl Default for Colour {
 #[cfg(test)]
 mod test {
     use super::Colour;
-    use std::u32;
 
     #[test]
     fn new() {

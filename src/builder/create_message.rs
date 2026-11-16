@@ -12,8 +12,7 @@ use std::collections::BTreeMap;
 /// There are two situations where different field requirements are present:
 ///
 /// 1. When sending an [`embed`], no other field is required;
-/// 2. Otherwise, [`content`] is the only required field that is required to be
-/// set.
+/// 2. Otherwise, [`content`] is the only required field that is required to be set.
 ///
 /// Note that if you only need to send the content of a message, without
 /// specifying other fields, then [`ChannelId::say`] may be a more preferable

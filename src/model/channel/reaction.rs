@@ -397,7 +397,7 @@ impl From<String> for ReactionType {
     fn from(unicode: String) -> ReactionType { ReactionType::Unicode(unicode) }
 }
 
-impl<'a> From<&'a str> for ReactionType {
+impl From<&str> for ReactionType {
     /// Creates a `ReactionType` from a string slice.
     ///
     /// # Examples
@@ -417,24 +417,8 @@ impl<'a> From<&'a str> for ReactionType {
     fn from(unicode: &str) -> ReactionType { ReactionType::Unicode(unicode.to_string()) }
 }
 
-// TODO: Change this to `!` once it becomes stable.
-#[derive(Debug)]
-pub enum NeverFails {}
-
-impl Display for NeverFails {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "never fails")
-    }
-}
-
-impl StdError for NeverFails {
-    fn description(&self) -> &str {
-        "never fails"
-    }
-}
-
 impl FromStr for ReactionType {
-    type Err = NeverFails;
+    type Err = !;
 
     fn from_str(s: &str) -> ::std::result::Result<Self, Self::Err> {
         Ok(ReactionType::from(s))

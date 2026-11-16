@@ -316,7 +316,7 @@ impl ChannelId {
     #[cfg(feature = "cache")]
     #[inline]
     pub fn to_channel_cached(self, cache: impl AsRef<CacheRwLock>) -> Option<Channel> {
-        self._to_channel_cached(&cache.as_ref())
+        self._to_channel_cached(cache.as_ref())
     }
 
     /// To allow testing pass their own cache instead of using the globale one.
@@ -701,7 +701,7 @@ impl From<Channel> for ChannelId {
     }
 }
 
-impl<'a> From<&'a Channel> for ChannelId {
+impl From<&Channel> for ChannelId {
     /// Gets the Id of a `Channel`.
     fn from(channel: &Channel) -> ChannelId {
         match *channel {
@@ -718,7 +718,7 @@ impl From<PrivateChannel> for ChannelId {
     fn from(private_channel: PrivateChannel) -> ChannelId { private_channel.id }
 }
 
-impl<'a> From<&'a PrivateChannel> for ChannelId {
+impl From<&PrivateChannel> for ChannelId {
     /// Gets the Id of a private channel.
     fn from(private_channel: &PrivateChannel) -> ChannelId { private_channel.id }
 }
@@ -728,7 +728,7 @@ impl From<GuildChannel> for ChannelId {
     fn from(public_channel: GuildChannel) -> ChannelId { public_channel.id }
 }
 
-impl<'a> From<&'a GuildChannel> for ChannelId {
+impl From<&GuildChannel> for ChannelId {
     /// Gets the Id of a guild channel.
     fn from(public_channel: &GuildChannel) -> ChannelId { public_channel.id }
 }

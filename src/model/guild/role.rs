@@ -212,7 +212,7 @@ impl From<Role> for RoleId {
     fn from(role: Role) -> RoleId { role.id }
 }
 
-impl<'a> From<&'a Role> for RoleId {
+impl From<&Role> for RoleId {
     /// Gets the Id of a role.
     fn from(role: &Role) -> RoleId { role.id }
 }

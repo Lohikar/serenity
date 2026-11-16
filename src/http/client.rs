@@ -806,7 +806,7 @@ impl Http {
         let body = serde_json::to_vec(map)?;
 
         let mut headers = Headers::new();
-        headers.insert(CONTENT_TYPE, HeaderValue::from_static(&"application/json"));
+        headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
 
         let response = self.request(Request {
             body: Some(&body),
@@ -1443,7 +1443,7 @@ impl Http {
                 AttachmentType::Image(url) => {
                     let url = Url::parse(url).map_err(|_| Error::Url(url.to_string()))?;
                     let filename = url.path_segments()
-                      .and_then(|segments| segments.last().map(ToString::to_string))
+                      .and_then(|mut segments| segments.next_back().map(ToString::to_string))
                       .ok_or_else(|| Error::Url(url.to_string()))?;
                     let mut picture: Vec<u8> = vec![];
                     let mut req = self.client.get(url).send()?;
@@ -1474,7 +1474,7 @@ impl Http {
         let response = self.client
             .post(url)
             .header(AUTHORIZATION, HeaderValue::from_str(&self.token)?)
-            .header(USER_AGENT, HeaderValue::from_static(&constants::USER_AGENT))
+            .header(USER_AGENT, HeaderValue::from_static(constants::USER_AGENT))
             .multipart(multipart).send()?;
 
         if !response.status().is_success() {
@@ -1707,7 +1707,7 @@ fn configure_client_backend(builder: ClientBuilder) -> ClientBuilder {
 }
 
 impl AsRef<Http> for Http {
-    fn as_ref(&self) -> &Http { &self }
+    fn as_ref(&self) -> &Http { self }
 }
 
 impl Default for Http {

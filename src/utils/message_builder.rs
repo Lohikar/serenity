@@ -1011,7 +1011,7 @@ impl EmbedMessageBuilding for MessageBuilder {
     }
 
     fn push_named_link_safe<T: I, U: I>(&mut self, name: T, url: U) -> &mut Self {
-        self.0.push_str("[");
+        self.0.push('[');
         {
             let mut c = name.into();
             c.inner = normalize(&c.inner).replace("]", " ");
@@ -1023,7 +1023,7 @@ impl EmbedMessageBuilding for MessageBuilder {
             c.inner = normalize(&c.inner).replace(")", " ");
             self.0.push_str(&c.to_string());
         }
-        self.0.push_str(")");
+        self.0.push(')');
 
         self
     }
@@ -1272,12 +1272,13 @@ fn normalize(text: &str) -> String {
         .replace("discordservers.com", "discordservers\u{2024}com")
         .replace("discord.com/invite", "discordapp\u{2024}com/invite")
         // Remove right-to-left override and other similar annoying symbols
-        .replace('\u{202E}', " ") // RTL Override
-        .replace('\u{200F}', " ") // RTL Mark
-        .replace('\u{202B}', " ") // RTL Embedding
-        .replace('\u{200B}', " ") // Zero-width space
-        .replace('\u{200D}', " ") // Zero-width joiner
-        .replace('\u{200C}', " ") // Zero-width non-joiner
+        // \u{202E} - RTL Override
+        // \u{200F} - RTL Mark
+        // \u{202B} - RTL Embedding
+        // \u{200B} - Zero-width space
+        // \u{200D} - Zero-width joiner
+        // \u{200C} - Zero-width non-joiner
+        .replace(['\u{202E}', '\u{200F}', '\u{202B}', '\u{200B}', '\u{200D}', '\u{200C}'], " ")
         // Remove everyone and here mentions. Has to be put after ZWS replacement
         // because it utilises it itself.
         .replace("@everyone", "@\u{200B}everyone")

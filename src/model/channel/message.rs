@@ -151,7 +151,7 @@ impl Message {
             if let Some(cache) = cache_http.cache() {
                 let req = Permissions::MANAGE_MESSAGES;
                 let is_author = self.author.id == cache.read().user.id;
-                let has_perms = utils::user_has_perms(&cache, self.channel_id, self.guild_id, req)?;
+                let has_perms = utils::user_has_perms(cache, self.channel_id, self.guild_id, req)?;
 
                 if !is_author && !has_perms {
                     return Err(Error::Model(ModelError::InvalidPermissions(req)));
@@ -159,7 +159,7 @@ impl Message {
             }
         }
 
-        self.channel_id.delete_message(&cache_http.http(), self.id)
+        self.channel_id.delete_message(cache_http.http(), self.id)
     }
 
     /// Deletes all of the [`Reaction`]s associated with the message.
@@ -242,7 +242,7 @@ impl Message {
             builder.content(&self.content);
         }
 
-        if let Some(embed) = self.embeds.get(0) {
+        if let Some(embed) = self.embeds.first() {
             let embed = CreateEmbed::from(embed.clone());
             builder.embed(|_| {
                 embed
@@ -255,8 +255,7 @@ impl Message {
 
         match cache_http.http().edit_message(self.channel_id.0, self.id.0, &Value::Object(map)) {
             Ok(edited) => {
-                mem::replace(self, edited);
-
+                *self = edited;
                 Ok(())
             },
             Err(why) => Err(why),
@@ -425,7 +424,7 @@ impl Message {
                 if self.guild_id.is_some() {
                     let req = Permissions::MANAGE_MESSAGES;
 
-                    if !utils::user_has_perms(&cache, self.channel_id, self.guild_id, req)? {
+                    if !utils::user_has_perms(cache, self.channel_id, self.guild_id, req)? {
                         return Err(Error::Model(ModelError::InvalidPermissions(req)));
                     }
                 }
@@ -605,14 +604,14 @@ impl Message {
 
     pub(crate) fn check_embed_length(map: &JsonMap) -> Result<()> {
         let embed = match map.get("embed") {
-            Some(&Value::Object(ref value)) => value,
+            Some(Value::Object(value)) => value,
             _ => return Ok(()),
         };
 
         let mut total: usize = 0;
 
-        if let Some(&Value::Object(ref author)) = embed.get("author") {
-            if let Some(&Value::Object(ref name)) = author.get("name") {
+        if let Some(Value::Object(author)) = embed.get("author") {
+            if let Some(Value::Object(name)) = author.get("name") {
                 total += name.len();
             }
         }
@@ -621,27 +620,27 @@ impl Message {
             total += description.len();
         }
 
-        if let Some(&Value::Array(ref fields)) = embed.get("fields") {
+        if let Some(Value::Array(fields)) = embed.get("fields") {
             for field_as_value in fields {
                 if let Value::Object(ref field) = *field_as_value {
-                    if let Some(&Value::String(ref field_name)) = field.get("name") {
+                    if let Some(Value::String(field_name)) = field.get("name") {
                         total += field_name.len();
                     }
 
-                    if let Some(&Value::String(ref field_value)) = field.get("value") {
+                    if let Some(Value::String(field_value)) = field.get("value") {
                         total += field_value.len();
                     }
                 }
             }
         }
 
-        if let Some(&Value::Object(ref footer)) = embed.get("footer") {
-            if let Some(&Value::String(ref text)) = footer.get("text") {
+        if let Some(Value::Object(footer)) = embed.get("footer") {
+            if let Some(Value::String(text)) = footer.get("text") {
                 total += text.len();
             }
         }
 
-        if let Some(&Value::String(ref title)) = embed.get("title") {
+        if let Some(Value::String(title)) = embed.get("title") {
             total += title.len();
         }
 
@@ -666,7 +665,7 @@ impl From<Message> for MessageId {
     fn from(message: Message) -> MessageId { message.id }
 }
 
-impl<'a> From<&'a Message> for MessageId {
+impl From<&Message> for MessageId {
     /// Gets the Id of a `Message`.
     fn from(message: &Message) -> MessageId { message.id }
 }

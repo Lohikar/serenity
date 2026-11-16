@@ -940,10 +940,7 @@ impl Guild {
             let split = name.split_at(pos + 1);
 
             let split2 = (
-                match split.0.get(0..split.0.len() - 1) {
-                    Some(s) => s,
-                    None => "",
-                },
+                split.0.get(0..split.0.len() - 1).unwrap_or_default(),
                 split.1,
             );
 
@@ -952,7 +949,7 @@ impl Guild {
                 Err(_) => (name, None),
             }
         } else {
-            (&name[..], None)
+            (name, None)
         };
 
         self.members
@@ -969,7 +966,7 @@ impl Guild {
             .or_else(|| {
                 self.members
                     .values()
-                    .find(|member| member.nick.as_ref().map_or(false, |nick| nick == name))
+                    .find(|member| member.nick.as_ref().is_some_and(|nick| nick == name))
             })
     }
 
@@ -995,13 +992,13 @@ impl Guild {
                 }
 
                 || member.nick.as_ref()
-                    .map_or(false, |nick|
-
-                    if case_sensitive {
-                        nick.starts_with(prefix)
-                    } else {
-                        starts_with_case_insensitive(nick, prefix)
-                    })).collect();
+                    .is_some_and(|nick|
+	                    if case_sensitive {
+	                        nick.starts_with(prefix)
+	                    } else {
+	                        starts_with_case_insensitive(nick, prefix)
+	                    }
+                    )).collect();
 
         if sorted {
             members
@@ -1070,8 +1067,7 @@ impl Guild {
                 }
 
                 || member.nick.as_ref()
-                    .map_or(false, |nick| {
-
+                    .is_some_and(|nick| {
                         if case_sensitive {
                             nick.contains(substring)
                         } else {
@@ -1176,7 +1172,7 @@ impl Guild {
             .values()
             .filter(|member|
                 member.nick.as_ref()
-                    .map_or(false, |nick| {
+                    .is_some_and(|nick| {
 
                         if case_sensitive {
                             nick.contains(substring)
@@ -1380,7 +1376,7 @@ impl Guild {
                 }
             }
 
-            data.sort_by(|a, b| a.0.cmp(&b.0));
+            data.sort_by_key(|a| a.0);
 
             for overwrite in data {
                 permissions = (permissions & !overwrite.1) | overwrite.2;
@@ -1427,10 +1423,7 @@ impl Guild {
         channel_id: ChannelId,
         role_id: RoleId,
     ) -> Option<Permissions> {
-        let mut permissions = match self.roles.get(&role_id) {
-            Some(role) => role.permissions,
-            None => return None,
-        };
+        let mut permissions = self.roles.get(&role_id)?.permissions;
 
         if permissions.contains(Permissions::ADMINISTRATOR) {
             return Some(Permissions::all());
@@ -1643,7 +1636,7 @@ impl Guild {
             }
         }
 
-        self.id.unban(&cache_http.http(), user_id)
+        self.id.unban(cache_http.http(), user_id)
     }
 
     /// Retrieve's the guild's vanity URL.

@@ -67,7 +67,7 @@ impl ChannelCategory {
     #[inline]
     #[cfg(feature = "http")]
     pub fn delete(&self, cache_http: impl CacheHttp) -> Result<()> {
-        self.id.delete(&cache_http.http()).map(|_| ())
+        self.id.delete(cache_http.http()).map(|_| ())
     }
 
     /// Modifies the category's settings, such as its position or name.

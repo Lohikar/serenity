@@ -286,7 +286,7 @@ pub fn parse_emoji(mention: impl AsRef<str>) -> Option<EmojiIdentifier> {
 
     let len = mention.len();
 
-    if len < 6 || len > 56 {
+    if !(6..=56).contains(&len) {
         return None;
     }
 
@@ -622,9 +622,9 @@ fn clean_roles(cache: impl AsRef<CacheRwLock>, s: &mut String) {
                 let to_replace = format!("<@&{}>", &s[mention_start..mention_end]);
 
                 *s = if let Some(role) = id._to_role_cached(&cache) {
-                    s.replace(&to_replace, &format!("@{}", &role.name))
+                    s.replace(&to_replace, &format!("@{}", role.name))
                 } else {
-                    s.replace(&to_replace, &"@deleted-role")
+                    s.replace(&to_replace, "@deleted-role")
                 };
             } else  {
                 let id = &s[mention_start..mention_end].to_string();
@@ -633,7 +633,7 @@ fn clean_roles(cache: impl AsRef<CacheRwLock>, s: &mut String) {
                     .all(u8::is_ascii_digit){
                     let to_replace = format!("<@&{}>", id);
 
-                    *s = s.replace(&to_replace, &"@deleted-role");
+                    *s = s.replace(&to_replace, "@deleted-role");
                 } else {
                     progress = mention_end;
                 }
@@ -659,11 +659,11 @@ fn clean_channels(cache: &RwLock<Cache>, s: &mut String) {
             if let Ok(id) = ChannelId::from_str(&s[mention_start..mention_end]) {
                 let to_replace = format!("<#{}>", &s[mention_start..mention_end]);
 
-                *s = if let Some(Channel::Guild(channel)) = id._to_channel_cached(&cache) {
-                    let replacement = format!("#{}", &channel.read().name);
+                *s = if let Some(Channel::Guild(channel)) = id._to_channel_cached(cache) {
+                    let replacement = format!("#{}", channel.read().name);
                     s.replace(&to_replace, &replacement)
                 } else {
-                    s.replace(&to_replace, &"#deleted-channel")
+                    s.replace(&to_replace, "#deleted-channel")
                 };
             } else {
                 let id = &s[mention_start..mention_end].to_string();
@@ -672,7 +672,7 @@ fn clean_channels(cache: &RwLock<Cache>, s: &mut String) {
                     .all(u8::is_ascii_digit) {
                     let to_replace = format!("<#{}>", id);
 
-                    *s = s.replace(&to_replace, &"#deleted-channel");
+                    *s = s.replace(&to_replace, "#deleted-channel");
                 } else {
                     progress = mention_end;
                 }
@@ -695,18 +695,15 @@ fn clean_users(cache: &RwLock<Cache>, s: &mut String, show_discriminator: bool, 
             mention_end += mention_start;
             mention_start += "<@".len();
 
-            let has_exclamation = if s[mention_start..].as_bytes().get(0).map_or(false, |c| *c == b'!') {
-                mention_start += "!".len();
-
-                true
-            } else {
-                false
-            };
+            let has_exclamation = s[mention_start..].starts_with('!');
+            if has_exclamation {
+	            mention_start += "!".len();
+            }
 
             if let Ok(id) = UserId::from_str(&s[mention_start..mention_end]) {
                 let replacement = if let Some(guild) = guild {
 
-                    if let Some(guild) = cache.read().guild(&guild) {
+                    if let Some(guild) = cache.read().guild(guild) {
 
                         if let Some(member) = guild.read().members.get(&id) {
 
@@ -748,7 +745,7 @@ fn clean_users(cache: &RwLock<Cache>, s: &mut String, show_discriminator: bool, 
                     let code_start = if has_exclamation { "<@!" } else { "<@" };
                     let to_replace = format!("{}{}>", code_start, id);
 
-                    *s = s.replace(&to_replace, &"@invalid-user");
+                    *s = s.replace(&to_replace, "@invalid-user");
                 } else {
                     progress = mention_end;
                 }
@@ -793,15 +790,15 @@ pub fn content_safe(cache: impl AsRef<CacheRwLock>, s: impl AsRef<str>, options:
     let cache = cache.as_ref();
 
     if options.clean_role {
-        clean_roles(&cache, &mut s);
+        clean_roles(cache, &mut s);
     }
 
     if options.clean_channel {
-        clean_channels(&cache, &mut s);
+        clean_channels(cache, &mut s);
     }
 
     if options.clean_user {
-        clean_users(&cache, &mut s, options.show_discriminator, options.guild_reference);
+        clean_users(cache, &mut s, options.show_discriminator, options.guild_reference);
     }
 
     if options.clean_here {

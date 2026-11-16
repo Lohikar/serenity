@@ -123,7 +123,7 @@ impl Emoji {
                 match AsRef::<Http>::as_ref(&cache_and_http)
                     .edit_emoji(guild_id.0, self.id.0, &map) {
                     Ok(emoji) => {
-                        mem::replace(self, emoji);
+                    	*self = emoji;
 
                         Ok(())
                     },
@@ -220,7 +220,7 @@ impl Display for Emoji {
     /// Formats the emoji into a string that will cause Discord clients to
     /// render the emoji.
     ///
-    /// This is in the format of either `<:NAME:EMOJI_ID>` for normal emojis, 
+    /// This is in the format of either `<:NAME:EMOJI_ID>` for normal emojis,
     /// or `<a:NAME:EMOJI_ID>` for animated emojis.
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         if self.animated {
@@ -240,7 +240,7 @@ impl From<Emoji> for EmojiId {
     fn from(emoji: Emoji) -> EmojiId { emoji.id }
 }
 
-impl<'a> From<&'a Emoji> for EmojiId {
+impl From<&Emoji> for EmojiId {
     /// Gets the Id of an `Emoji`.
     fn from(emoji: &Emoji) -> EmojiId { emoji.id }
 }

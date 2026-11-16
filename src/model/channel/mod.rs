@@ -357,8 +357,7 @@ impl Display for Channel {
     ///
     /// - [`Group`]s: the generated name retrievable via [`Group::name`];
     /// - [`PrivateChannel`]s: the recipient's name;
-    /// - [`GuildChannel`]s: a string mentioning the channel that users who can
-    /// see the channel can click on.
+    /// - [`GuildChannel`]s: a string mentioning the channel that users who can see the channel can click on.
     ///
     /// [`Group`]: struct.Group.html
     /// [`Group::name`]: struct.Group.html#method.name

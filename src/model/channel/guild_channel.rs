@@ -140,7 +140,7 @@ impl GuildChannel {
             if let Some(cache) = cache_http.cache() {
                 let req = Permissions::CREATE_INVITE;
 
-                if !utils::user_has_perms(&cache, self.id, Some(self.guild_id), req)? {
+                if !utils::user_has_perms(cache, self.id, Some(self.guild_id), req)? {
                     return Err(Error::Model(ModelError::InvalidPermissions(req)));
                 }
             }
@@ -282,13 +282,13 @@ impl GuildChannel {
             if let Some(cache) = cache_http.cache() {
                 let req = Permissions::MANAGE_CHANNELS;
 
-                if !utils::user_has_perms(&cache, self.id, Some(self.guild_id), req)? {
+                if !utils::user_has_perms(cache, self.id, Some(self.guild_id), req)? {
                     return Err(Error::Model(ModelError::InvalidPermissions(req)));
                 }
             }
         }
 
-        self.id.delete(&cache_http.http())
+        self.id.delete(cache_http.http())
     }
 
     /// Deletes all messages by Ids from the given vector in the channel.
@@ -364,7 +364,7 @@ impl GuildChannel {
             if let Some(cache) = cache_http.cache() {
                 let req = Permissions::MANAGE_CHANNELS;
 
-                if !utils::user_has_perms(&cache, self.id, Some(self.guild_id), req)? {
+                if !utils::user_has_perms(cache, self.id, Some(self.guild_id), req)? {
                     return Err(Error::Model(ModelError::InvalidPermissions(req)));
                 }
             }
@@ -380,8 +380,7 @@ impl GuildChannel {
 
         match cache_http.http().edit_channel(self.id.0, &edited) {
             Ok(channel) => {
-                std::mem::replace(self, channel);
-
+                *self = channel;
                 Ok(())
             },
             Err(why) => Err(why),
@@ -815,13 +814,13 @@ impl GuildChannel {
             if let Some(cache) = cache_http.cache() {
                 let req = Permissions::SEND_MESSAGES;
 
-                if !utils::user_has_perms(&cache, self.id, Some(self.guild_id), req)? {
+                if !utils::user_has_perms(cache, self.id, Some(self.guild_id), req)? {
                     return Err(Error::Model(ModelError::InvalidPermissions(req)));
                 }
             }
         }
 
-        self.id.send_message(&cache_http.http(), f)
+        self.id.send_message(cache_http.http(), f)
     }
 
     /// Unpins a [`Message`] in the channel given by its Id.
@@ -888,7 +887,7 @@ impl GuildChannel {
                     .members
                     .iter()
                     .filter_map(|e|
-                        if self.permissions_for_user(&cache, e.0).map(|p| p.contains(Permissions::READ_MESSAGES)).unwrap_or(false) {
+                        if self.permissions_for_user(cache, e.0).map(|p| p.contains(Permissions::READ_MESSAGES)).unwrap_or(false) {
                             Some(e.1.clone())
                         } else {
                             None

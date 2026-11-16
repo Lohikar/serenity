@@ -96,7 +96,7 @@ impl CacheUpdate for ChannelCreateEvent {
             },
             Channel::Private(ref channel) => {
                 if let Some(channel) = cache.private_channels.get(&channel.with(|c| c.id)) {
-                    return Some(Channel::Private(Arc::clone(&(*channel))));
+                    return Some(Channel::Private(Arc::clone(channel)));
                 }
 
                 let channel = Arc::clone(channel);
@@ -293,7 +293,7 @@ impl CacheUpdate for ChannelUpdateEvent {
                         let mut dest = e.get_mut().write();
 
                         if no_recipients {
-                            let recipients = mem::replace(&mut dest.recipients, BTreeMap::new());
+                            let recipients = std::mem::take(&mut dest.recipients);
 
                             dest.clone_from(&group.read());
 
@@ -418,7 +418,7 @@ impl CacheUpdate for GuildDeleteEvent {
 
     fn update(&mut self, cache: &mut Cache) -> Option<Self::Output> {
         // Remove channel entries for the guild if the guild is found.
-        cache.guilds.remove(&self.guild.id).map(|guild| {
+        cache.guilds.remove(&self.guild.id).inspect(|guild| {
             for channel_id in guild.write().channels.keys() {
                 // Remove the channel from the cache.
                 cache.channels.remove(channel_id);
@@ -426,8 +426,6 @@ impl CacheUpdate for GuildDeleteEvent {
                 // Remove the channel's cached messages.
                 cache.messages.remove(channel_id);
             }
-
-            guild
         })
     }
 }
@@ -824,10 +822,10 @@ impl CacheUpdate for MessageCreateEvent {
 
         let messages = cache.messages
             .entry(self.message.channel_id)
-            .or_insert_with(Default::default);
+            .or_default();
         let queue = cache.message_queue
             .entry(self.message.channel_id)
-            .or_insert_with(Default::default);
+            .or_default();
 
         let mut removed_msg = None;
 
@@ -978,17 +976,17 @@ impl CacheUpdate for PresenceUpdateEvent {
                 // Create a partial member instance out of the presence update
                 // data. This includes everything but `deaf`, `mute`, and
                 // `joined_at`.
-                if !guild.members.contains_key(&self.presence.user_id) {
+                if let std::collections::btree_map::Entry::Vacant(e) = guild.members.entry(self.presence.user_id) {
                     if let Some(user) = self.presence.user.as_ref() {
                         let roles = self.roles.clone().unwrap_or_default();
 
-                        guild.members.insert(self.presence.user_id, Member {
+                        e.insert(Member {
                             deaf: false,
                             guild_id,
                             joined_at: None,
                             mute: false,
                             nick: self.presence.nick.clone(),
-                            user: Arc::clone(&user),
+                            user: Arc::clone(user),
                             roles,
                         });
                     }
@@ -1971,6 +1969,7 @@ impl<'de> Deserialize<'de> for VoiceHeartbeatAck {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct VoiceReady {
     pub heartbeat_interval: u64,
     pub modes: Vec<String>,

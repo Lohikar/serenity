@@ -11,13 +11,10 @@
 //!
 //! Permissions follow a hierarchy:
 //!
-//! - An account can grant roles to users that are of a lower position than
-//! its highest role;
-//! - An account can edit roles lesser than its highest role, but can only
-//! grant permissions they have;
+//! - An account can grant roles to users that are of a lower position than its highest role;
+//! - An account can edit roles lesser than its highest role, but can only grant permissions they have;
 //! - An account can move only roles lesser than its highest role;
-//! - An account can only kick/ban accounts with a lesser role than its top
-//! role.
+//! - An account can only kick/ban accounts with a lesser role than its top role.
 //!
 //! **Note**: The following permissions require the owner account (e.g. the
 //! owner of a bot) to use two-factor authentication in the case that a guild

@@ -7,8 +7,7 @@
 //! > Additionally, rate limits take into account major parameters in the URL.
 //! > For example, `/channels/:channel_id` and
 //! > `/channels/:channel_id/messages/:message_id` both take `channel_id` into
-//! > account when generating rate limits since it's the major parameter. The
-//! only current major parameters are `channel_id`, `guild_id` and `webhook_id`.
+//! > account when generating rate limits since it's the major parameter. The only current major parameters are `channel_id`, `guild_id` and `webhook_id`.
 //!
 //! This results in the two URIs of `GET /channels/4/messages/7` and
 //! `GET /channels/5/messages/8` being rate limited _separately_. However, the
@@ -54,8 +53,6 @@ use std::{
     },
     time::Duration,
     thread,
-    i64,
-    u64,
 };
 use super::{HttpError, Request};
 use log::debug;
@@ -157,7 +154,7 @@ impl Ratelimiter {
             // - get the global rate;
             // - sleep if there is 0 remaining
             // - then, perform the request
-            let bucket = Arc::clone(&self.routes
+            let bucket = Arc::clone(self.routes
                 .write()
                 .entry(route)
                 .or_default());
@@ -184,10 +181,10 @@ impl Ratelimiter {
                 return Ok(response);
             } else {
                 let redo = if response.headers().get("x-ratelimit-global").is_some() {
-                    let _ = self.global.lock();
+                    let _lk = self.global.lock();
 
                     Ok(
-                        if let Some(retry_after) = parse_header::<u64>(&response.headers(), "retry-after")? {
+                        if let Some(retry_after) = parse_header::<u64>(response.headers(), "retry-after")? {
                             debug!("Ratelimited on route {:?} for {:?}ms", route, retry_after);
                             thread::sleep(Duration::from_millis(retry_after));
 
@@ -277,25 +274,25 @@ impl Ratelimit {
     }
 
     pub fn post_hook(&mut self, response: &Response, route: &Route) -> Result<bool> {
-        if let Some(limit) = parse_header(&response.headers(), "x-ratelimit-limit")? {
+        if let Some(limit) = parse_header(response.headers(), "x-ratelimit-limit")? {
             self.limit = limit;
         }
 
-        if let Some(remaining) = parse_header(&response.headers(), "x-ratelimit-remaining")? {
+        if let Some(remaining) = parse_header(response.headers(), "x-ratelimit-remaining")? {
             self.remaining = remaining;
         }
 
-        if let Some(reset) = parse_header::<f64>(&response.headers(), "x-ratelimit-reset")? {
+        if let Some(reset) = parse_header::<f64>(response.headers(), "x-ratelimit-reset")? {
             self.reset = (reset * 1000f64) as i64;
         }
 
-        if let Some(reset_after) = parse_header::<f64>(&response.headers(), "x-ratelimit-reset-after")? {
+        if let Some(reset_after) = parse_header::<f64>(response.headers(), "x-ratelimit-reset-after")? {
             self.reset_after = (reset_after * 1000f64) as i64;
         }
 
         Ok(if response.status() != StatusCode::TOO_MANY_REQUESTS {
             false
-        } else if let Some(retry_after) = parse_header::<u64>(&response.headers(), "retry-after")? {
+        } else if let Some(retry_after) = parse_header::<u64>(response.headers(), "retry-after")? {
             debug!("Ratelimited on route {:?} for {:?}ms", route, retry_after);
             thread::sleep(Duration::from_millis(retry_after));
 
@@ -363,7 +360,7 @@ fn parse_header<T: FromStr>(headers: &HeaderMap, header: &str) -> Result<Option<
         None => return Ok(None),
     };
 
-    let unicode = str::from_utf8(&header.as_bytes()).map_err(|_| {
+    let unicode = str::from_utf8(header.as_bytes()).map_err(|_| {
         Error::from(HttpError::RateLimitUtf8)
     })?;
 
@@ -415,7 +412,7 @@ mod tests {
 
         let mut map = HeaderMap::with_capacity(pairs.len());
 
-        for (name, val) in pairs.into_iter() {
+        for (name, val) in pairs.iter() {
             map.insert(name, val.to_owned());
         }
 

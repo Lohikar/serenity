@@ -55,7 +55,7 @@ impl WebSocketGatewayClientExt for WsClient {
                 "limit": limit.unwrap_or(0),
                 "query": query.unwrap_or(""),
             },
-        })).map_err(From::from)
+        }))
     }
 
     fn send_heartbeat(&mut self, shard_info: &[u64; 2], seq: Option<u64>)
@@ -65,7 +65,7 @@ impl WebSocketGatewayClientExt for WsClient {
         self.send_json(&json!({
             "d": seq,
             "op": OpCode::Heartbeat.num(),
-        })).map_err(From::from)
+        }))
     }
 
     fn send_identify(&mut self, shard_info: &[u64; 2], token: &str, guild_subscriptions: bool)
@@ -95,7 +95,7 @@ impl WebSocketGatewayClientExt for WsClient {
         shard_info: &[u64; 2],
         current_presence: &CurrentPresence,
     ) -> Result<()> {
-        let &(ref activity, ref status) = current_presence;
+        let (activity, status) = current_presence;
         let now = Utc::now().timestamp() as u64;
 
         debug!("[Shard {:?}] Sending presence update", shard_info);
@@ -131,6 +131,6 @@ impl WebSocketGatewayClientExt for WsClient {
                 "seq": seq,
                 "token": token,
             },
-        })).map_err(From::from)
+        }))
     }
 }

@@ -142,23 +142,23 @@ impl CacheHttp for &Arc<CacheAndHttp> {
 
 #[cfg(all(feature = "cache", feature = "http"))]
 impl CacheHttp for (&CacheRwLock, &Http) {
-    fn cache(&self) -> Option<&CacheRwLock> { Some(&self.0) }
-    fn http(&self) -> &Http { &self.1 }
+    fn cache(&self) -> Option<&CacheRwLock> { Some(self.0) }
+    fn http(&self) -> &Http { self.1 }
 }
 
 #[cfg(feature = "http")]
 impl CacheHttp for &Http {
-    fn http(&self) -> &Http { *self }
+    fn http(&self) -> &Http { self }
 }
 
 #[cfg(feature = "http")]
 impl CacheHttp for Arc<Http> {
-    fn http(&self) -> &Http { &*self }
+    fn http(&self) -> &Http { self }
 }
 
 #[cfg(feature = "http")]
 impl CacheHttp for &Arc<Http> {
-    fn http(&self) -> &Http { &*self }
+    fn http(&self) -> &Http { self }
 }
 
 #[cfg(all(feature = "cache", feature = "http"))]
@@ -225,7 +225,7 @@ impl<'a> From<(&'a [u8], &str)> for AttachmentType<'a> {
 impl<'a> From<&'a str> for AttachmentType<'a> {
     /// Constructs an `AttachmentType` from a string.
     /// This string may refer to the path of a file on disk, or the http url to an image on the internet.
-    fn from(s: &'a str) -> AttachmentType<'_> {
+    fn from(s: &'a str) -> AttachmentType<'a> {
         if s.starts_with("http://") || s.starts_with("https://") {
             AttachmentType::Image(s)
         } else {
@@ -235,13 +235,13 @@ impl<'a> From<&'a str> for AttachmentType<'a> {
 }
 
 impl<'a> From<&'a Path> for AttachmentType<'a> {
-    fn from(path: &'a Path) -> AttachmentType<'_> {
+    fn from(path: &'a Path) -> AttachmentType<'a> {
         AttachmentType::Path(path)
     }
 }
 
 impl<'a> From<&'a PathBuf> for AttachmentType<'a> {
-    fn from(pathbuf: &'a PathBuf) -> AttachmentType<'_> { AttachmentType::Path(pathbuf.as_path()) }
+    fn from(pathbuf: &'a PathBuf) -> AttachmentType<'a> { AttachmentType::Path(pathbuf.as_path()) }
 }
 
 impl<'a> From<(&'a File, &str)> for AttachmentType<'a> {

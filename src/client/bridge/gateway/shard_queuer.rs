@@ -99,8 +99,7 @@ impl ShardQueuer {
     /// If a [`ShardQueuerMessage::Start`] is received, this will:
     ///
     /// 1. Check how much time has passed since the last shard was started
-    /// 2. If the amount of time is less than the ratelimit, it will sleep until
-    /// that time has passed
+    /// 2. If the amount of time is less than the ratelimit, it will sleep until that time has passed
     /// 3. Start the shard by ID
     ///
     /// If a [`ShardQueuerMessage::Shutdown`] is received, this will return and
@@ -184,8 +183,8 @@ impl ShardQueuer {
 
         let mut runner = ShardRunner::new(ShardRunnerOptions {
             data: Arc::clone(&self.data),
-            event_handler: self.event_handler.as_ref().map(|eh| Arc::clone(eh)),
-            raw_event_handler: self.raw_event_handler.as_ref().map(|rh| Arc::clone(rh)),
+            event_handler: self.event_handler.as_ref().map(Arc::clone),
+            raw_event_handler: self.raw_event_handler.as_ref().map(Arc::clone),
             manager_tx: self.manager_tx.clone(),
             threadpool: self.threadpool.clone(),
             #[cfg(feature = "voice")]

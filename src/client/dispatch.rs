@@ -559,7 +559,7 @@ fn handle_event(
         },
         DispatchEvent::Model(Event::Ready(mut event)) => {
             update(&cache_and_http, &mut event);
-            let event_handler = Arc::clone(&event_handler);
+            let event_handler = Arc::clone(event_handler);
 
             threadpool.execute(move || {
                 event_handler.ready(context, event.ready);

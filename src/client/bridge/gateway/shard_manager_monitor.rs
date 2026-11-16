@@ -39,8 +39,7 @@ impl ShardManagerMonitor {
     /// This will continue running until either:
     ///
     /// - a [`ShardManagerMessage::ShutdownAll`] has been received
-    /// - an error is returned while receiving a message from the
-    /// channel (probably indicating that the shard manager should stop anyway)
+    /// - an error is returned while receiving a message from the channel (probably indicating that the shard manager should stop anyway)
     ///
     /// [`ShardManagerMessage::ShutdownAll`]: enum.ShardManagerMessage.html#variant.ShutdownAll
     pub fn run(&mut self) {

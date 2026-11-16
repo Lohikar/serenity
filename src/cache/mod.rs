@@ -70,9 +70,9 @@ pub trait StrExt: Sized {
     fn parse_cached<F: FromStrAndCache>(&self, cache: impl AsRef<CacheRwLock>) -> Result<F, F::Err>;
 }
 
-impl<'a> StrExt for &'a str {
+impl StrExt for &str {
     fn parse_cached<F: FromStrAndCache>(&self, cache: impl AsRef<CacheRwLock>) -> Result<F, F::Err> {
-        F::from_str(&cache, &self)
+        F::from_str(&cache, self)
     }
 }
 
@@ -904,7 +904,7 @@ mod test {
                 nonce: Value::Number(Number::from(1)),
                 pinned: false,
                 reactions: vec![],
-                timestamp: datetime.clone(),
+                timestamp: datetime,
                 tts: false,
                 webhook_id: None,
                 activity: None,
@@ -1056,7 +1056,7 @@ impl From<Arc<RwLock<Cache>>> for CacheRwLock {
 
 impl AsRef<CacheRwLock> for CacheRwLock {
     fn as_ref(&self) -> &CacheRwLock {
-        &self
+        self
     }
 }
 

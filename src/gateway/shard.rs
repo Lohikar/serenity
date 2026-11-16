@@ -137,7 +137,7 @@ impl Shard {
         shard_info: [u64; 2],
         guild_subscriptions: bool,
     ) -> Result<Shard> {
-        let mut client = connect(&*ws_url.lock())?;
+        let mut client = connect(&ws_url.lock())?;
 
         // Configure timeout and buffer sizes. See the respective
         // methods for the reasoning behind changing the defaults.
@@ -549,7 +549,7 @@ impl Shard {
             Ok(GatewayEvent::Reconnect) => {
                 Ok(Some(ShardAction::Reconnect(ReconnectType::Resume)))
             },
-            Err(Error::Gateway(GatewayError::Closed(ref data))) => self.handle_gateway_closed(&data),
+            Err(Error::Gateway(GatewayError::Closed(ref data))) => self.handle_gateway_closed(data),
             Err(Error::Tungstenite(ref why)) => {
                 warn!("[Shard {:?}] Websocket error: {:?}",
                       self.shard_info,
@@ -834,7 +834,7 @@ impl Shard {
 #[cfg(not(feature = "native_tls_backend"))]
 fn connect(base_url: &str) -> Result<WsClient> {
     let url = build_gateway_url(base_url)?;
-    Ok(create_rustls_client(url)?)
+    create_rustls_client(url)
 }
 
 #[cfg(feature = "native_tls_backend")]

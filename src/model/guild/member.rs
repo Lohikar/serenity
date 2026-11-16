@@ -36,7 +36,7 @@ impl BanOptions for str {
     fn reason(&self) -> &str { self }
 }
 
-impl<'a> BanOptions for &'a str {
+impl BanOptions for &str {
     fn reason(&self) -> &str { self }
 }
 
@@ -44,7 +44,7 @@ impl BanOptions for String {
     fn reason(&self) -> &str { self }
 }
 
-impl<'a> BanOptions for (u8, &'a str) {
+impl BanOptions for (u8, &str) {
     fn dmd(&self) -> u8 { self.0 }
 
     fn reason(&self) -> &str { self.1 }
@@ -197,10 +197,7 @@ impl Member {
     /// one returns `None`)
     #[cfg(feature = "cache")]
     pub fn default_channel(&self, cache: impl AsRef<CacheRwLock>) -> Option<Arc<RwLock<GuildChannel>>> {
-        let guild = match self.guild_id.to_guild_cached(&cache) {
-            Some(guild) => guild,
-            None => return None,
-        };
+        let guild = self.guild_id.to_guild_cached(&cache)?;
 
         let reader = guild.read();
 
@@ -256,8 +253,7 @@ impl Member {
     ///
     /// This _may_ return `None` if:
     ///
-    /// - the user has roles, but they are not present in the cache for cache
-    /// inconsistency reasons
+    /// - the user has roles, but they are not present in the cache for cache inconsistency reasons
     /// - you already have a write lock to the member's guild
     ///
     /// The "highest role in hierarchy" is defined as the role with the highest
@@ -271,7 +267,7 @@ impl Member {
         let mut highest = None;
 
         for role_id in &self.roles {
-            if let Some(role) = reader.roles.get(&role_id) {
+            if let Some(role) = reader.roles.get(role_id) {
                 // Skip this role if this role in iteration has:
                 //
                 // - a position less than the recorded highest

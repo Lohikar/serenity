@@ -78,22 +78,22 @@ impl<'a> Request<'a> {
             Url::parse(&path)?,
         );
 
-        if let Some(ref bytes) = body {
-            builder = builder.body(Vec::from(*bytes));
+        if let Some(bytes) = body {
+            builder = builder.body(Vec::from(bytes));
         }
 
         let mut headers = Headers::with_capacity(4);
-        headers.insert(USER_AGENT, HeaderValue::from_static(&constants::USER_AGENT));
+        headers.insert(USER_AGENT, HeaderValue::from_static(constants::USER_AGENT));
         headers.insert(AUTHORIZATION,
-            HeaderValue::from_str(&token).map_err(HttpError::InvalidHeader)?);
+            HeaderValue::from_str(token).map_err(HttpError::InvalidHeader)?);
 
         // Discord will return a 400: Bad Request response if we set the content type header,
         // but don't give a body.
         if self.body.is_some() {
-            headers.insert(CONTENT_TYPE, HeaderValue::from_static(&"application/json"));
+            headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
         }
 
-        headers.insert(CONTENT_LENGTH, HeaderValue::from_static(&"0"));
+        headers.insert(CONTENT_LENGTH, HeaderValue::from_static("0"));
         headers.insert("X-Ratelimit-Precision", HeaderValue::from_static("millisecond"));
 
         if let Some(ref request_headers) = request_headers {

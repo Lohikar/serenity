@@ -587,7 +587,7 @@ impl User {
             }
         };
 
-        private_channel_id.send_message(&cache_http.http(), f)
+        private_channel_id.send_message(cache_http.http(), f)
     }
 
     /// This is an alias of [direct_message].
@@ -710,7 +710,7 @@ impl User {
     #[cfg(feature = "http")]
     pub fn refresh(&mut self, cache_http: impl CacheHttp) -> Result<()> {
         self.id.to_user(cache_http).map(|replacement| {
-            mem::replace(self, replacement);
+            *self = replacement;
         })
     }
 
@@ -786,7 +786,7 @@ impl User {
             }
         }
 
-        guild_id.member(cache_http, &self.id).ok().and_then(|member| member.nick)
+        guild_id.member(cache_http, self.id).ok().and_then(|member| member.nick)
     }
 }
 
@@ -873,7 +873,7 @@ impl From<CurrentUser> for UserId {
     fn from(current_user: CurrentUser) -> UserId { current_user.id }
 }
 
-impl<'a> From<&'a CurrentUser> for UserId {
+impl From<&CurrentUser> for UserId {
     /// Gets the Id of a `CurrentUser` struct.
     fn from(current_user: &CurrentUser) -> UserId { current_user.id }
 }
@@ -883,7 +883,7 @@ impl From<Member> for UserId {
     fn from(member: Member) -> UserId { member.user.read().id }
 }
 
-impl<'a> From<&'a Member> for UserId {
+impl From<&Member> for UserId {
     /// Gets the Id of a `Member`.
     fn from(member: &Member) -> UserId { member.user.read().id }
 }
@@ -893,7 +893,7 @@ impl From<User> for UserId {
     fn from(user: User) -> UserId { user.id }
 }
 
-impl<'a> From<&'a User> for UserId {
+impl From<&User> for UserId {
     /// Gets the Id of a `User`.
     fn from(user: &User) -> UserId { user.id }
 }
