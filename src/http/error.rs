@@ -16,11 +16,10 @@ use std::{
 use url::ParseError as UrlError;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq)]
+#[non_exhaustive]
 pub struct DiscordJsonError {
     pub code: isize,
     pub message: String,
-    #[serde(skip)]
-    non_exhaustive: (),
 }
 
 impl std::fmt::Debug for DiscordJsonError {
@@ -44,7 +43,6 @@ impl From<Response> for ErrorResponse {
             error: r.json().unwrap_or_else(|_| DiscordJsonError {
                 code: -1,
                 message: "[Serenity] No correct json was received!".to_string(),
-                non_exhaustive: (),
             }),
         }
     }
@@ -52,6 +50,7 @@ impl From<Response> for ErrorResponse {
 
 
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum Error {
     /// When a non-successful status code was received for a request.
     UnsuccessfulRequest(ErrorResponse),
@@ -67,8 +66,6 @@ pub enum Error {
     InvalidHeader(InvalidHeaderValue),
     /// Reqwest's Error contain information on why sending a request failed.
     Request(ReqwestError),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl From<ReqwestError> for Error {
@@ -98,7 +95,6 @@ impl Display for Error {
             Error::Url(_) => f.write_str("Provided URL is incorrect."),
             Error::InvalidHeader(_) => f.write_str("Provided value is an invalid header value."),
             Error::Request(_) => f.write_str("Error while sending HTTP request."),
-            Error::__Nonexhaustive => unreachable!(),
         }
     }
 }
@@ -124,7 +120,6 @@ mod test {
         let error = DiscordJsonError {
             code: 43121215,
             message: String::from("This is a Ferris error"),
-            non_exhaustive: (),
         };
 
         let mut builder = Builder::new();

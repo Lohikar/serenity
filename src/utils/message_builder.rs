@@ -1043,6 +1043,7 @@ impl EmbedMessageBuilding for MessageBuilder {
 /// use serenity::utils::Content;
 /// let content: Content = Bold + Italic + "text";
 /// ```
+#[non_exhaustive]
 pub enum ContentModifier {
     Italic,
     Bold,
@@ -1050,8 +1051,6 @@ pub enum ContentModifier {
     Code,
     Underline,
     Spoiler,
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 /// Describes formatting on string content
@@ -1138,7 +1137,6 @@ impl Content {
             ContentModifier::Spoiler => {
                 self.spoiler = true;
             },
-            ContentModifier::__Nonexhaustive => unreachable!(),
         }
     }
 
@@ -1336,7 +1334,6 @@ mod test {
                 managed: false,
                 require_colons: true,
                 roles: vec![],
-                _nonexhaustive: (),
             })
             .build();
         let content_mentions = MessageBuilder::new()

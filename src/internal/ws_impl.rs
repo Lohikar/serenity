@@ -84,6 +84,7 @@ fn convert_ws_message(message: Option<Message>) -> Result<Option<Value>>{
 /// An error that occured while connecting over rustls
 #[derive(Debug)]
 #[cfg(not(feature = "native_tls_backend"))]
+#[non_exhaustive]
 pub enum RustlsError {
     /// WebPKI X.509 Certificate Validation Error.
     WebPKI,
@@ -91,8 +92,6 @@ pub enum RustlsError {
     HandshakeError,
     /// Standard IO error happening while creating the tcp stream
     Io(IoError),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 #[cfg(not(feature = "native_tls_backend"))]
@@ -109,7 +108,6 @@ impl Display for RustlsError {
             RustlsError::WebPKI => f.write_str("Failed to validate X.509 certificate"),
             RustlsError::HandshakeError => f.write_str("TLS handshake failed when making the websocket connection"),
             RustlsError::Io(inner) => Display::fmt(&inner, f),
-            RustlsError::__Nonexhaustive => unreachable!(),
         }
     }
 }

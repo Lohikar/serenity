@@ -100,11 +100,11 @@ use crate::http::Http;
 
 #[cfg(feature = "client")]
 #[derive(Default)]
+#[non_exhaustive]
 pub struct CacheAndHttp {
     #[cfg(feature = "cache")]
     pub cache: CacheRwLock,
     #[cfg(feature = "cache")]
     pub update_cache_timeout: Option<Duration>,
     pub http: Arc<Http>,
-    __nonexhaustive: (),
 }

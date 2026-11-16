@@ -7,6 +7,7 @@ use std::{
 /// An error returned from the voice module.
 // Errors which are not visible to the end user are hidden.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum VoiceError {
     /// An indicator that an endpoint URL was invalid.
     EndpointUrl,
@@ -28,8 +29,6 @@ pub enum VoiceError {
     ///
     /// The JSON output is given.
     YouTubeDLUrl(Value),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 /// An error returned from the dca method.
@@ -39,6 +38,4 @@ pub enum DcaError {
     InvalidHeader,
     InvalidMetadata(JsonError),
     InvalidSize(i32),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }

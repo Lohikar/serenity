@@ -24,6 +24,7 @@ use crate::http::Http;
 /// [`Guild`]: ../guild/struct.Guild.html
 /// [`User`]: ../user/struct.User.html
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct Group {
     /// The Id of the group channel.
     #[serde(rename = "id")]
@@ -42,8 +43,6 @@ pub struct Group {
     #[serde(deserialize_with = "deserialize_users",
             serialize_with = "serialize_users")]
     pub recipients: BTreeMap<UserId, Arc<RwLock<User>>>,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 #[cfg(feature = "model")]

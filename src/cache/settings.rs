@@ -10,23 +10,15 @@
 /// let mut settings = CacheSettings::new();
 /// settings.max_messages(10);
 /// ```
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
 pub struct Settings {
     /// The maximum number of messages to store in a channel's message cache.
     ///
     /// Defaults to 0.
     pub max_messages: usize,
-    __nonexhaustive: (),
 }
 
-impl Default for Settings {
-    fn default() -> Self {
-        Settings {
-            max_messages: usize::default(),
-            __nonexhaustive: (),
-        }
-    }
-}
 
 impl Settings {
     /// Creates new settings to be used with a cache.

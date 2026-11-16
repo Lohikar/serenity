@@ -46,6 +46,7 @@ use parking_lot::RwLock;
 
 /// A container for any channel.
 #[derive(Clone, Debug)]
+#[non_exhaustive]
 pub enum Channel {
     /// A group. A group comprises of only one channel.
     Group(Arc<RwLock<Group>>),
@@ -64,8 +65,6 @@ pub enum Channel {
     ///
     /// [`GuildChannel`]: struct.GuildChannel.html
     Category(Arc<RwLock<ChannelCategory>>),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl Channel {
@@ -256,7 +255,6 @@ impl Channel {
             Channel::Category(ref category) => {
                 category.read().delete(cache_http)?;
             },
-            Channel::__Nonexhaustive => unreachable!(),
         }
 
         Ok(())
@@ -270,7 +268,6 @@ impl Channel {
             Channel::Guild(ref channel) => channel.with(|c| c.is_nsfw()),
             Channel::Category(ref category) => category.with(|c| c.is_nsfw()),
             Channel::Group(_) | Channel::Private(_) => false,
-            Channel::__Nonexhaustive => unreachable!(),
         }
     }
 
@@ -286,7 +283,6 @@ impl Channel {
             Channel::Guild(ref ch) => ch.with(|c| c.id),
             Channel::Private(ref ch) => ch.with(|c| c.id),
             Channel::Category(ref category) => category.with(|c| c.id),
-            Channel::__Nonexhaustive => unreachable!(),
         }
     }
 
@@ -349,7 +345,6 @@ impl Serialize for Channel {
             Channel::Private(ref c) => {
                 PrivateChannel::serialize(&*c.read(), serializer)
             },
-            Channel::__Nonexhaustive => unreachable!(),
         }
     }
 }
@@ -380,7 +375,6 @@ impl Display for Channel {
                 Display::fmt(&recipient.name, f)
             },
             Channel::Category(ref category) => Display::fmt(&category.read().name, f),
-            Channel::__Nonexhaustive => unreachable!(),
         }
     }
 }
@@ -522,7 +516,6 @@ impl Serialize for PermissionOverwrite {
         let (id, kind) = match self.kind {
             PermissionOverwriteType::Member(id) => (id.0, "member"),
             PermissionOverwriteType::Role(id) => (id.0, "role"),
-            PermissionOverwriteType::__Nonexhaustive => unreachable!(),
         };
 
         let mut state = serializer.serialize_struct("PermissionOverwrite", 4)?;
@@ -541,13 +534,12 @@ impl Serialize for PermissionOverwrite {
 ///
 /// [`GuildChannel::create_permission`]: struct.GuildChannel.html#method.create_permission
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[non_exhaustive]
 pub enum PermissionOverwriteType {
     /// A member which is having its permission overwrites edited.
     Member(UserId),
     /// A role which is having its permission overwrites edited.
     Role(RoleId),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 #[cfg(test)]
@@ -568,7 +560,6 @@ mod test {
                 name: None,
                 owner_id: UserId(2),
                 recipients: BTreeMap::new(),
-                _nonexhaustive: (),
             }
         }
 
@@ -588,7 +579,6 @@ mod test {
                 user_limit: None,
                 nsfw: false,
                 slow_mode_rate: Some(0),
-                _nonexhaustive: (),
             }
         }
 
@@ -604,9 +594,7 @@ mod test {
                     bot: false,
                     discriminator: 1,
                     name: "ab".to_string(),
-                    _nonexhaustive: (),
                 })),
-                _nonexhaustive: (),
             }
         }
 

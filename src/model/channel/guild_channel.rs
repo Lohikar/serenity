@@ -38,6 +38,7 @@ use crate::http::Http;
 /// News channels are a subset of text channels and lack slow mode hence
 /// `slow_mode_rate` will be `None`.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct GuildChannel {
     /// The unique Id of the channel.
     ///
@@ -102,8 +103,6 @@ pub struct GuildChannel {
     /// channels.
     #[serde(default, rename = "rate_limit_per_user")]
     pub slow_mode_rate: Option<u64>,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 #[cfg(feature = "model")]

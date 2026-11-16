@@ -16,6 +16,7 @@ use bitflags::bitflags;
 ///
 /// This is only applicable to bot users.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct BotGateway {
     /// Information describing how many gateway sessions you can initiate within
     /// a ratelimit period.
@@ -25,12 +26,11 @@ pub struct BotGateway {
     pub shards: u64,
     /// The gateway to connect to.
     pub url: String,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 /// Representation of an activity that a [`User`] is performing.
 #[derive(Clone, Debug, Serialize)]
+#[non_exhaustive]
 pub struct Activity {
     /// The ID of the application for the activity.
     pub application_id: Option<ApplicationId>,
@@ -62,8 +62,6 @@ pub struct Activity {
     /// [`ActivityType::Streaming`]: enum.ActivityType.html#variant.Streaming
     /// [`kind`]: #structfield.kind
     pub url: Option<String>,
-    #[serde(skip_serializing)]
-    pub(crate) _nonexhaustive: (),
 }
 
 #[cfg(feature = "model")]
@@ -110,7 +108,6 @@ impl Activity {
             emoji: None,
             timestamps: None,
             url: None,
-            _nonexhaustive: (),
         }
     }
 
@@ -159,7 +156,6 @@ impl Activity {
             emoji: None,
             timestamps: None,
             url: Some(url.to_string()),
-            _nonexhaustive: (),
         }
     }
 
@@ -205,7 +201,6 @@ impl Activity {
             emoji: None,
             timestamps: None,
             url: None,
-            _nonexhaustive: (),
         }
     }
 }
@@ -278,13 +273,13 @@ impl<'de> Deserialize<'de> for Activity {
             emoji,
             timestamps,
             url,
-            _nonexhaustive: (),
         })
     }
 }
 
 /// The assets for an activity.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct ActivityAssets {
     /// The ID for a large asset of the activity, usually a snowflake.
     pub large_image: Option<String>,
@@ -294,8 +289,6 @@ pub struct ActivityAssets {
     pub small_image: Option<String>,
     /// Text displayed when hovering over the small image of the activity.
     pub small_text: Option<String>,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 bitflags! {
@@ -319,17 +312,17 @@ bitflags! {
 
 /// Information about an activity's party.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct ActivityParty {
     /// The ID of the party.
     pub id: Option<String>,
     /// Used to show the party's current and maximum size.
     pub size: Option<[u64; 2]>,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 /// Secrets for an activity.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct ActivitySecrets {
     /// The secret for joining a party.
     pub join: Option<String>,
@@ -338,8 +331,6 @@ pub struct ActivitySecrets {
     pub match_: Option<String>,
     /// The secret for spectating an activity.
     pub spectate: Option<String>,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 /// Representation of an emoji used in a custom status
@@ -354,9 +345,11 @@ pub struct ActivityEmoji {
 }
 
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[non_exhaustive]
 pub enum ActivityType {
     /// An indicator that the user is playing a game.
+    #[default]
     Playing = 0,
     /// An indicator that the user is streaming to a service.
     Streaming = 1,
@@ -364,8 +357,6 @@ pub enum ActivityType {
     Listening = 2,
     /// An indicator that the user uses custum statuses
     Custom = 4,
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 enum_number!(
@@ -386,13 +377,8 @@ impl ActivityType {
             Streaming => 1,
             Listening => 2,
             Custom => 4,
-            __Nonexhaustive => unreachable!(),
         }
     }
-}
-
-impl Default for ActivityType {
-    fn default() -> Self { ActivityType::Playing }
 }
 
 /// A representation of the data retrieved from the gateway endpoint.
@@ -401,11 +387,10 @@ impl Default for ActivityType {
 ///
 /// [`BotGateway`]: struct.BotGateway.html
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct Gateway {
     /// The gateway to connect to.
     pub url: String,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 /// Information detailing the current active status of a [`User`].
@@ -422,6 +407,7 @@ pub struct ClientStatus {
 ///
 /// [`User`]: ../user/struct.User.html
 #[derive(Clone, Debug)]
+#[non_exhaustive]
 pub struct Presence {
     /// The activity that a [`User`] is performing.
     ///
@@ -440,7 +426,6 @@ pub struct Presence {
     pub user_id: UserId,
     /// The associated user instance.
     pub user: Option<Arc<RwLock<User>>>,
-    pub(crate) _nonexhaustive: (),
 }
 
 impl<'de> Deserialize<'de> for Presence {
@@ -505,7 +490,6 @@ impl<'de> Deserialize<'de> for Presence {
             status,
             user,
             user_id,
-            _nonexhaustive: (),
         })
     }
 }
@@ -542,6 +526,7 @@ impl Serialize for Presence {
 
 /// An initial set of information given after IDENTIFYing to the gateway.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct Ready {
     pub guilds: Vec<GuildStatus>,
     #[serde(default, serialize_with = "serialize_presences", deserialize_with = "deserialize_presences")]
@@ -555,13 +540,12 @@ pub struct Ready {
     pub user: CurrentUser,
     #[serde(rename = "v")]
     pub version: u64,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 
 /// Information describing how many gateway sessions you can initiate within a
 /// ratelimit period.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct SessionStartLimit {
     /// The number of sessions that you can still initiate within the current
     /// ratelimit period.
@@ -570,14 +554,11 @@ pub struct SessionStartLimit {
     pub reset_after: u64,
     /// The total number of session starts within the ratelimit period allowed.
     pub total: u64,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
 /// Timestamps of when a user started and/or is ending their activity.
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct ActivityTimestamps {
     pub end: Option<u64>,
     pub start: Option<u64>,
-    #[serde(skip)]
-    pub(crate) _nonexhaustive: (),
 }
