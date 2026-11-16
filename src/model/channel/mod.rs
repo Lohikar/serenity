@@ -387,6 +387,7 @@ impl Display for Channel {
 
 /// A representation of a type of channel.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[non_exhaustive]
 pub enum ChannelType {
     /// An indicator that the channel is a text [`GuildChannel`].
     ///
@@ -424,8 +425,7 @@ pub enum ChannelType {
     Directory = 14,
     Forum = 15,
     Media = 16,
-    #[doc(hidden)]
-    __Nonexhaustive,
+    Hub = 20,
 }
 
 enum_number!(
@@ -441,6 +441,7 @@ enum_number!(
         Directory,
         Forum,
         Media,
+        Hub,
     }
 );
 
@@ -458,7 +459,7 @@ impl ChannelType {
             ChannelType::Directory => "directory",
             ChannelType::Forum => "forum",
             ChannelType::Media => "media",
-            ChannelType::__Nonexhaustive => unreachable!(),
+            ChannelType::Hub => "hub",
         }
     }
 
@@ -475,7 +476,7 @@ impl ChannelType {
             ChannelType::Directory => 14,
             ChannelType::Forum => 15,
             ChannelType::Media => 16,
-            ChannelType::__Nonexhaustive => unreachable!(),
+            ChannelType::Hub => 20,
         }
     }
 }
