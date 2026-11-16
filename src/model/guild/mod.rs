@@ -1887,7 +1887,6 @@ impl<'de> Deserialize<'de> for Guild {
             banner,
             vanity_url_code,
             preferred_locale,
-            _nonexhaustive: (),
         })
     }
 }
